@@ -13,8 +13,8 @@ class Pseudo {
         System.out.println(sub);
     }
 
+    /* MATI */
     // imprimir mapa: ciclo que llama a imprimir
-
     private static void imprimirMapa() {
         // .data
         // matriz: .ascii "0123...51"
@@ -32,6 +32,7 @@ class Pseudo {
         }
     }
 
+    /* BRA */
     private static void imprimirAciertos() {
         /*
          * .data
@@ -55,6 +56,7 @@ class Pseudo {
         return 0;
     }
 
+    /* JUAN */
     // imprimir feedback
     void imprimirFeedback() {
         /*
@@ -67,12 +69,15 @@ class Pseudo {
     }
 
     /**
+     * MATI
+     * 
      * Lo que está en ascii lo retorna en un numero
      */
     int convertirANum(char caracter) {
         return caracter - 30;
     }
 
+    /* BRA */
     int escanearOpcion() {
         Scanner sc = new Scanner("Ingresá 1 para arriesgar letra, 2 para arriesgar palabra");
         char input = sc.next().toCharArray()[0];
@@ -81,6 +86,7 @@ class Pseudo {
         return num;
     }
 
+    /* JUAN */
     char escanearLetra() {
         // .data
         // escanerLetra: .byte "a"
@@ -96,7 +102,7 @@ class Pseudo {
         Scanner sc = new Scanner("Ingresá 1 para arriesgar letras, 2 para arriesgar palabra");
         char input = sc.next().toCharArray()[0];
         sc.close();
-        return input;
+        // return input;
     }
 
     public static void main(String[] args) {
