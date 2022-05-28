@@ -3,9 +3,9 @@
 VAR1: .WORD 5
 VAR2: .WORD 6
 
-VECTOR1: .WORD 9,2,3,5,8 /* 4 bytes x cada digito * 5 cant_dig/
+VECTOR1: .WORD 9,2,3,5,8 /* 4 bytes x cada digito * 5 cant_dig */
                        
------------------------------
+
 @recorrido de un vector
 
 MOV r1,#0
