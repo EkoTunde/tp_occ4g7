@@ -50,25 +50,53 @@ class Pseudo {
         }
     }
 
+    /* ESTA HECHA EN CLASE */
+    int tamanoCadena(int dirMem) {
+        return 0;
+    }
+
     // imprimir feedback
-    void imprimir() {
-
+    void imprimirFeedback() {
+        /*
+         * .data
+         * feedback: .asciz "Quedan 5 letras por adivinar."
+         */
+        int dirMem = 0; // ldr r1, =feedback
+        int tamanoCadena = tamanoCadena(dirMem);
+        imprimir(dirMem, tamanoCadena);
     }
 
-    // imprimir estado juego
-    // imprimir vidas
-    // imprimir info: feedback, estado juego, vidas
-    private static void imprimirInfo() {
-        // Todo
+    /**
+     * Lo que está en ascii lo retorna en un numero
+     */
+    int convertirANum(char caracter) {
+        return caracter - 30;
     }
 
-    private static void escanearLetra() {
-        // Imprimir la instrucción
-        System.out.println("Instrucción al usuario: ");
-        // Reciba el input de usuario
-        Scanner scanner = new Scanner("Ingresá una letra");
-        // Retorne lo primero que encuentre
-        String input = scanner.next();
+    int escanearOpcion() {
+        Scanner sc = new Scanner("Ingresá 1 para arriesgar letra, 2 para arriesgar palabra");
+        char input = sc.next().toCharArray()[0];
+        sc.close();
+        int num = convertirANum(input);
+        return num;
+    }
+
+    char escanearLetra() {
+        // .data
+        // escanerLetra: .byte "a"
+        Scanner sc = new Scanner("Ingrese una letra");
+        char input = sc.next().toCharArray()[0];
+        int dirMem = 0; // ldrb r1, =escanerLetra
+        int tamanoEscanear = 1;
+        sc.close();
+        return input;
+    }
+
+    void escanearPalabra() {
+        Scanner sc = new Scanner("Ingresá 1 para arriesgar letras, 2 para arriesgar palabra");
+        char input = sc.next().toCharArray()[0];
+        sc.close();
+        return input;
     }
 
     public static void main(String[] args) {
