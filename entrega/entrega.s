@@ -4,6 +4,16 @@
     feedback: .asciz "Quedan x letras por adivinar."
     vidas: .byte 7
 	vida0: .ascii "0"
+    msjArriesgarLetra:          .asciz "Por favor, ingrese la letra que desea arriegar: "
+    letraElegida:               .asciz " \n"
+    plantillaEscanear: .ascii "Esta es la plantilla para escanear"
+    solicitudNumero: .ascii "Por favor, ingrese un número entre 0 y 9, inclusive: "
+    matrizAciertos: .asciz "+-------------------------------------------+      |\n"
+                        .asciz "|                                           |      |\n"
+                        .asciz "|    @a@@us                                 |      |\n"
+                        .asciz "|                                           |      |\n"
+                        .asciz "+-------------------------------------------+      |\n"
+                        longitudMatrizAciertos=.-matrizAciertos
 
 
 @ Declaramos nuestro código del programa
@@ -58,6 +68,17 @@
             bx lr                   // Volvemos
         .fnend
 
+    // Entrada r1 -> dirección de memoria del mensaje en asciz
+    imprimirAsciz:
+        .fnstart
+            push {r0, r2, lr}
+            bl largoCadena
+            mov r2, r0
+            bl imprimir
+            pop {r0, r2, lr}
+            bx lr
+        .fnend
+
     // Entrada r1 -> dirección de memoria
     // Entrada r2 -> tamaño cadena
     imprimir:
@@ -108,6 +129,35 @@
         bl imprimir                 // Imprime el mensaje de feedback
         pop {r0, r1, r2, r3, r6, lr}    // Quitamos la protección de los registros
         bx lr                       // Volvemos
+
+    // Actualiza el asciz que empieza en =letraElegida
+    // con la letra elegida por el usuario
+    escanearLetra:
+        .fnstart
+            push {r0, r1, r2, r7, lr}   // Protegemos los registros
+            ldr r1, =msjArriesgarLetra  // Mensaje al usuario
+            bl imprimirAsciz            // Imprime la solicitud al usuario
+            mov r7, #3                  // Función escanear input del usuario
+            mov r0, #0                  // EL búfer
+            mov r2, #1                  // Con cuánto me quedo del input
+            ldr r1, =letraElegida       // Donde se guarda el resultado
+            swi 0                       // SWI, Software interrupt
+            pop {r0, r1, r2, r7, lr}    // Quitamos la protección de los registros
+            bx lr                       // Volvemos
+        .fnend
+
+    // imprime cuadrante de matriz de palabra a adivinar
+	// Entrada r1 -> dirección de memoria
+	imprimirAciertos:
+		.fnstart
+            push {r1, r2, lr} // Protegemos los registros
+            ldr r1, =matrizAciertos
+            ldr r2, =longitudMatrizAciertos
+            bl imprimir
+            pop {r1, r2, lr}
+            bx lr
+		.fnend
+
 
     @ Donde empieza nuestro programa
     .global main
