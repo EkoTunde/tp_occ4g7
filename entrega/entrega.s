@@ -9,10 +9,10 @@
 @ Declaramos nuestro código del programa
 .text
 
-    // Retorna un numero en su equivalente de ascii
-    // Entrada r0: el numero en ascii
-    // Salida r1: el equivalente de ascii
-    asciiDeNum:
+    // Retorna un numero ascii equivalente a las vidas restantes
+    // Entrada r0: el numero de vidas
+    // Salida r1: el equivalente en ascii de las vidas
+    asciiDeVidas:
         .fnstart
       		push {r0, lr}
       		ldr r1, =vida0
@@ -20,6 +20,29 @@
       		add r1, r0
       		pop {r0, lr}
       		bx lr
+        .fnend
+
+    // Retorna el input de un numero del usuario
+    escanearNum:
+        .fnstart
+            push {lr}
+            mov r7, #3 // Leer el input del usuario
+            mov r0, #0 // El primer parametro es el buffer
+            mov r2, #1 // El segundo parametro es el tamaño del buffer
+            ldr r1, =plantillaEscanear // Donde se guarda la direccion del input
+            swi 0
+            pop {lr}
+            bx lr
+        .fnend
+
+    asciiANum:
+        .fnstart
+            push {lr}
+            ldr r1, =plantillaEscanear
+            ldrb r2, [r1]
+            sub r2, #48
+            pop {lr}
+            bx lr
         .fnend
 
     // Reemplaza el caracter de la posicion especificada por otro
@@ -70,19 +93,20 @@
         .fnend
 
     
+    // Se encarga de imprimir las vidas restantes
     imprimirFeedback:
-        push {r0, r1, r2, r3, lr}   // Protegemos los registros
+        push {r0, r1, r2, r3, r6, lr}   // Protegemos los registros
         mov r2, #7                  // El índice que queremos reemplazar
         ldr r6, =vidas              // Direc de las vidas
         ldr r0, [r6]                // El número de vidas a r0
-        bl asciiDeNum               // En r1 ponemos el equivalente en ascii de r0
+        bl asciiDeVidas             // En r1 ponemos el equivalente en ascii de r0
         mov r3, r1                  // Copias el ascii en r3
         ldr r1, =feedback           // Dirección de memoria de la cadena
         bl reemplazar               // Reemplazamos con el valor actual de las vidas
         bl largoCadena              // Obtenemos el largo de la cadena
         mov r2, r0                  // Guardamos el largo en r2
         bl imprimir                 // Imprime el mensaje de feedback
-        pop {r0, r1, r2, r3, lr}    // Quitamos la protección de los registros
+        pop {r0, r1, r2, r3, r6, lr}    // Quitamos la protección de los registros
         bx lr                       // Volvemos
 
     @ Donde empieza nuestro programa
