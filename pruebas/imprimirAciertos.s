@@ -23,12 +23,12 @@
 	// Entrada r1 -> dirección de memoria
 	imprimirAciertos:
 				.fnstart
-						push {r1, r2, lr} // Protegemos los registros
-						ldr r1, =matrizAciertos
-						ldr r2, =longitudMatrizAciertos
-						bl imprimir
-						pop {r1, r2, lr}
-						bx lr
+					push {r1, r2, lr} // Protegemos los registros
+					ldr r1, =matrizAciertos // Cargamos el cuadrante de la matriz Aciertos
+					ldr r2, =longitudMatrizAciertos // Cargamos la longitud de la matrizAciertos
+					bl imprimir // Llamamos a la función imprimir con los parámetros de r1 y r2
+					pop {r1, r2, lr} // Quitamos la protección de los registros
+					bx lr // Volvemos a donde estaba apuntando el Link Register en el main
 				.fnend
 
 	.global main
