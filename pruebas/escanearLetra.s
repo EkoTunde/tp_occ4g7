@@ -51,7 +51,7 @@
                 bx lr
         .fnend
 
-    // Actualiza el ascii que empieza en =letraElegida
+    // Actualiza el asciz que empieza en =letraElegida
     // con la letra elegida por el usuario
     escanearLetra:
         .fnstart
