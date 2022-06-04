@@ -19,7 +19,7 @@
         .asciz "|            o                                     |\n" @7
         .asciz "|           ┌|┐                                    |\n" @8
         .asciz "|            |                                     |\n" @9
-        .asciz "|           / \                                    |\n" @10
+        .asciz "|           │ │                                    |\n" @10
         .asciz "|                                                  |\n" @11
         .asciz "|                                                  |\n" @12
         .asciz "|                                                  |\n" @13
