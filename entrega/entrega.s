@@ -8,6 +8,24 @@
     letraElegida:               .asciz " \n"
     plantillaEscanear: .ascii "Esta es la plantilla para escanear"
     solicitudNumero: .ascii "Por favor, ingrese un número entre 0 y 9, inclusive: "
+   
+   mapa:.asciz "___________________________________________________|\n" @0
+        .asciz "                                                   |\n" @1
+        .asciz "*** EL JUEGO DEL AHORCADO - ORGA 1 ***             |\n" @2
+        .asciz "___________________________________________________|\n" @3
+        .asciz "|                                                  |\n" @4
+        .asciz "+------------+                                     |\n" @5
+        .asciz "|            |                                     |\n" @6
+        .asciz "|            o                                     |\n" @7
+        .asciz "|           ┌|┐                                    |\n" @8
+        .asciz "|            |                                     |\n" @9
+        .asciz "|           / \                                    |\n" @10
+        .asciz "|                                                  |\n" @11
+        .asciz "|                                                  |\n" @12
+        .asciz "|                                                  |\n" @13
+        .asciz "___________________________________________________|\n" @14
+         longitud=.- mapa
+   
     matrizAciertos: .asciz "+-------------------------------------------+      |\n"
                         .asciz "|                                           |      |\n"
                         .asciz "|    @a@@us                                 |      |\n"
