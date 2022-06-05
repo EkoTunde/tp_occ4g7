@@ -221,10 +221,35 @@ clearScreen:
     
     // 
     
+    //----------------------------------------------------------
+    imprimirString:
+        .fnstart
+            //Parametros inputs:
+            //r1=puntero al string que queremos imprimir
+            //r2=longitud de lo que queremos imprimir
+            push {lr}
+            push {r1}
+            push {r2} 
+            bl clearScreen
+            pop {r2}
+            pop {r1}
+            mov r7, #4 // Salida por pantalla  
+            mov r0, #1      // Indicamos a SWI que sera una cadena           
+            swi 0    // SWI, Software interrup
+            pop {lr}
+            bx lr //salimos de la funcion mifuncion
+        .fnend
+
+
     // ! ↓↓↓↓ DE ACA PARA ABAJO LO HICIMOS EL 04/06 ↓↓↓↓
-    // r0 <-- direc memoria cadena1
-    // r1 <-- direc memoria cadena2
-    // Salida r2: si son iguales (1: true, 0: false)
+
+    /******** INI MISMO LARGO CADENAS *******************************************************************/
+    /**
+    *   Entrada r0: puntero cadena1
+    *   Entrada r1: puntero cadena2
+    *   -----------------------------------------
+    *   Salida r2: 1 (true) o 0 (false) si son iguales o no
+    */
     mismoLargoCadenas:
       .fnstart
         push {r0, r1, lr}
@@ -261,9 +286,20 @@ clearScreen:
           bx lr
       .fnend
     
-    // Entrada r0: dirección memoria cadena1
-    // Entrada r1: dirección memoria cadena2
-    // Salida r2: si son iguales, 1 (true), 0 (false)
+    
+    
+    
+    /******** FIN MISMO LARGO CADENAS *******************************************************************/
+
+
+
+    /******** INI CADENAS SON IGUALES *******************************************************************/
+    /**
+    *   Entrada r0: puntero cadena1
+    *   Entrada r1: puntero cadena2
+    *   -----------------------------------------
+    *   Salida r2: 1 (true) o 0 (false) si son iguales o no
+    */
     cadenasSonIguales:
         .fnstart
             push {r0, r1, r3, r4, r5, r6, lr}
@@ -302,22 +338,43 @@ clearScreen:
             
         .fnend
 
-    // Entrada r1: cantidad de vidas a restar
+    /******** FIN CADENAS SON IGUALES *******************************************************************/
+    
+    
+
+    /******** INI QUITAR VIDAS **************************************************************************/
+    /**
+    *   Entrada r1: cantidad de vidas a restar
+    */
     quitarVidas:
         @todo: vidas--
         @todo - BRIAN
-    
-    // Actualiza la "matrizAciertos"
+    /******** FIN QUITAR VIDAS **************************************************************************/
+
+
+
+    /******** INI REVELAR PALABRA SECRETA ***************************************************************/
+    /**
+    *   Actualiza la parte del mapa que muestra las letras reveladas de la palabra secreta.
+    */
     revelarPalabraSecreta:
         @todo - JUAN
-    
-    // Compara si la palabra arriesgada por el usuario es igual a la secreta
-    // Si no acerto:
-    //         * Ganado -> false
-    //         * Vidas = 0
-    //         * Revela la palabra secreta
-    // Si acerto: ganado es true
-    // Entrada r1: la direccion memoria del input del usuario
+    /******** FIN REVELAR PALABRA SECRETA ***************************************************************/
+
+
+
+    /******** INI ARRIESGAR PALABRA *********************************************************************/
+    /**
+    *   Compara si la palabra arriesgada por el usuario es igual a la secreta.
+    *   Si no acertó:
+    *           - Ganado = false
+    *           - Vidas = 0
+    *           - Revela la palabra secreta
+    *   Si acertó:
+    *           - Ganado = true
+    *   ----------------------------------------------------------------------
+    *   Entrada r1: puntero al input del usuario
+    */
     arriesgarPalabra:
         .fnstart
             push {r0, r1, r2, lr}
@@ -357,24 +414,80 @@ clearScreen:
                 pop {r0, r1, r2, lr}
                 bal finJugar
         .fnend
+    /******** FIN ARRIESGAR PALABRA *********************************************************************/
 
-    // Entrada r0: direccion memoria de la cadena
-    // Entrada r1: direccion memoria de la letra
-    // Salida r2: 1 o 0 (true/false)
+
+
+    /******** INI CADENA CONTIENE LETRA *****************************************************************/
+    /**
+    *   True/false si la letra especificada está presente en la cadena.
+    *   ---------------------------------------------------------------
+    *   Entrada r0: direccion memoria de la cadena
+    *   Entrada r1: direccion memoria de la letra
+    *   ---------------------------------------------------------------
+    *   Salida r2: 1 o 0 (true/false)
+    */
     cadenaContieneLetra:
-        @ todo - JUAN
+        .fnstart
+            push {r0, r1, r3, r4, lr}   // Protegemos los registros que vamos a usar
+            mov r2, #0                  // Inicializamos contador en 0
+            ldrb r1, [r1]               // r1 <-- Primer byte de lo que apunta el puntero que estaba en r1
+            cicloCadenaContieneLetra:
+                ldrb r3, [r0, r2]               // r3 <-- Byte que que apunta el puntero r0 + r2 (contador)
+                cmp r3, #0                      // r3 es el caracter nulo?
+                beq letraNoEstaEnCadena         // Si lo es, la letra no esta en la cadena
+                cmp r1, r3                      // r3 es igual que la letra que esta en r1?
+                beq letraSiEstaEnCadena         // Si lo es, la letra esta en la cadena
+                add r2, #1                      // Si no lo es, incrementamos el contador
+                bal cicloCadenaContieneLetra    // Volvemos a iterar
 
-    // Agrega la letra acertada al mapa
-    // Entrada r0: el puntero al string con la letra
+            letraNoEstaEnCadena:
+                mov r2, #0                  // r2 <-- 0 (false)
+                bal finCadenaContieneLetra  // Salimos del procedimiento 
+
+            letraSiEstaEnCadena:
+                mov r2, #1                  // r2 <-- 1 (true)
+                bal finCadenaContieneLetra  // Salimos del procedimiento 
+                
+            finCadenaContieneLetra:
+                pop {r0, r1, r3, r4, lr}
+                bx lr
+        .fnend
+    /******** FIN CADENA CONTIENE LETRA *****************************************************************/
+
+
+
+    /******** INI AGREGAR ACIERTO AL MAPA ***************************************************************/
+    /**
+    *   Agrega la letra acertada al mapa.
+    *   ---------------------------------
+    *   Entrada r0: puntero al string con la letra
+    */
     agregarAciertoAlMapa:
         @todo - JUAN
+    /******** FIN AGREGAR ACIERTO AL MAPA ***************************************************************/
 
-    // Agrega la letra usada al stack de letras usadas
-    // Entrada r0: el puntero de la letra
+
+
+    /******** INI AGREGAR LETRAS USADA ******************************************************************/
+    /**
+    *   Agrega la letra usada al string de letras usadas
+    *   ------------------------------------------------
+    *   Entrada r0: puntero al string con las letras usadas
+    *   Entrada r1: puntero al string con la letra para agregar
+    */
     agregarLetraUsada:
         @todo - JUAN
+    /******** FIN AGREGAR LETRAS USADA ******************************************************************/
 
-    // Entrada r1: la dir mem del input del usuario
+
+
+    /******** INI ARRIESGAR LETRA ***********************************************************************/
+    /**
+    *   Procesa la funcionalidad del usuario arriesgando una letra.
+    *   -----------------------------------------------------------
+    *   Entrada r1: puntero al string del input del usuario
+    */
     arriesgarLetra:
         .fnstart
             push {r0, r1, r2, lr}
@@ -423,10 +536,14 @@ clearScreen:
                 pop {r0, r1, r2, lr}
                 bal finJugar
         .fnend
+    /******** FIN AGREGAR LETRAS USADA ******************************************************************/
 
 
-    // Actualiza el asciz que empieza en =inputUsuario
-    // con la letra elegida por el usuario
+
+    /******** INI ESCANEAR ******************************************************************************/
+    /**
+    *   Actualiza el string "inputUsuario" con lo que el usuario haya ingresado por consola.
+    */
     escanear:
         .fnstart
             push {r0, r1, r2, r7, lr}
@@ -440,9 +557,14 @@ clearScreen:
             // SI NO ES ASI -> reemplazar el primer espacio con un nul
             bx lr
         .fnend
+    /******** FIN ESCANEAR ******************************************************************************/
 
 
-    // Se encarga del modo de juego para salvarse si no quedan vidas
+
+    /******** INI DISPARAR PARA GANAR *******************************************************************/
+    /**
+    *   Procesa el modo de juego, donde el usuario puede salvarse si no le quedan vidas.
+    */
     dispararParaGanar:
         @todo - MATI
         // Usuario tiene que ingresar coordenas x e y
@@ -461,8 +583,14 @@ clearScreen:
         // Si no coincide ganado = false
         // imprime "Te equivocaste. Perdiste el juego."
         // bal fin
+    /******** INI DISPARAR PARA GANAR *******************************************************************/
 
-    // Le hace al usuario una pregunta de aproximacion para restaurarle vida(s)
+
+
+    /******** INI PREGUNTA APROXIMATIVA *****************************************************************/
+    /**
+    *   Le hace al usuario una pregunta de aproximacion para restaurarle vida(s)
+    */
     preguntaAproximativa:
         @todo - BRIAN
         // Imprime una pregunta aleatoria
@@ -471,9 +599,16 @@ clearScreen:
 
         // si la respuesta es incorrecta
         // vidas = 0.
+    /******** FIN PREGUNTA APROXIMATIVA *****************************************************************/
 
-    // Imprime todo en pantalla, recopila el input del usuario
-    // y altera los estados del juego para la proxima iteracion
+
+
+    /******** INI JUGAR *********************************************************************************/
+    /**
+    *   Imprime en pantalla el estado del juego, 
+    *   registra el input del usuario y altera 
+    *   los estados del juego segun esto.
+    */
     jugar:
         .fnstart
             push {r1, lr}           // Protegemos los registros
@@ -496,7 +631,11 @@ clearScreen:
                 pop {r1, lr}            // Quitamos protección
                 bx lr                   // Volvemos a donde sea que nos llamaron
         .fnend
+    /******** FIN JUGAR *********************************************************************************/
 
+
+
+    /******** INI CICLO WHILE ***************************************************************************/
     // Es el ciclo general del programa
     // Acá dentro, se decide si salir, o continuar
     cicloWhile:
@@ -510,14 +649,21 @@ clearScreen:
             pop {r1, lr}        // Quitamos proteccion
             bal cicloWhile
         .fnend
+    /******** FIN CICLO WHILE ***************************************************************************/
 
+
+
+    /******** INI MAIN **********************************************************************************/
     @ Donde empieza nuestro programa
     .global main
     main:
         bl cicloWhile
+    /******** INI MAIN **********************************************************************************/
 
 
+    /******** INI FIN ***********************************************************************************/
     @ Para manejar el fin del programa
     fin:
         mov r7, #1  // Instrucción para salir del programa
         swi 0       // Interrumpimos para terminas
+    /******** FIN FIN ***********************************************************************************/
