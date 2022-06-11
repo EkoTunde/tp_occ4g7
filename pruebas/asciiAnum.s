@@ -7,7 +7,7 @@ ValorInt .word 0
 aciiADecim:
 
 	.fnstart
-		push {r0,r1,lr}
+		push {r0,lr}
 
 		mov r10, #10 @ para desplazar 1 posicion en el num c → d → u
 		mov r2, #0 @se guarda el valor numero actual, parcialmente
@@ -27,7 +27,7 @@ aciiADecim:
 			ldr r1,=ValorInt
 			str r2,[r1] @ r1 ← r2
 
-		pop {r0,r1,lr}
+		pop {r0,lr}
 		bx lr
 	.fnend
 	
