@@ -3,8 +3,8 @@
 coordenadaX: .word 0
 coordenadaY: .word 0
 
-ingresarX: .asciz "Ingrese la coordenada x para el disparo: "
-ingresarY: .asciz "Ingrese la coordenada y para el disparo: "
+ingresarX: .asciz "Ingrese la coordenada x para el disparo: \n"
+ingresarY: .asciz "Ingrese la coordenada y para el disparo: \n"
 
 
 @Imprime un mensaje indicando que se ingrese la coordenada X del disparo.
@@ -12,7 +12,7 @@ imprimirPedidoX:
 .fnstart
    mov r7, #4              @Tipo de interrupcion  = lectura por teclado
    mov r0, #1              @Salida de cadena
-   mov r2, #41            @Tamaño de la cadena, 
+   mov r2, #43            @Tamaño de la cadena, 
    ldr r1, = ingresarX
    swi 0
    bx lr
@@ -23,7 +23,7 @@ imprimirPedidoY:
 .fnstart
    mov r7, #4             @Tipo de interrupcion = lectura por teclado
    mov r0, #1             @Salida de cadena
-   mov r2, #41            @Tamaño de la cadena
+   mov r2, #43            @Tamaño de la cadena
    ldr r1, = ingresarY
    swi 0
    bx lr
@@ -31,7 +31,7 @@ imprimirPedidoY:
 
 
  // Entrada r0 <- dirección de memoria del dato ingresado
- //Salida r1 el valor x transformado a int.
+ //Salida r5  <- el valor X transformado a AsciiAnum (hexa).
 capturarX:
 .fnstart
    push {lr}                     
@@ -45,20 +45,20 @@ capturarX:
    swi 0
 
    ldr r0, = coordenadaX @cargo en r0 la direccion de coordenada X para usarla
-						 @en la subrutina asciiADecim 
+						       @en la subrutina asciiADecim 
 
    push {lr}                     
    bl asciiADecim
    pop {lr}                      
 
-   ldr r0, = coordenadaX
-   str r1, [r0] @r1 tiene el valor pasado de asciiADecim y lo guarda en r0
+   ldr r5, = coordenadaX
+   str r1, [r5] @r1 tiene el valor pasado a asciiADecim y lo guarda en r5
 
    bx lr
 .fnend
 
  // Entrada r0 <- dirección de memoria del dato ingresado
- //Salida r1 el valor y transformado a int.
+ //Salida r3 <- el valor Y transformado a AsciiAnum (hexa).
 capturarY:
 .fnstart
    push {lr}                   
@@ -72,15 +72,14 @@ capturarY:
    swi 0
 
    ldr r0, = coordenadaY  @cargo en r0 la direccion de la coordenada Y para usarla
-						  @en la subrutina asciiADecim 
+						        @en la subrutina asciiADecim 
 
    push {lr}                   
    bl asciiADecim
    pop {lr}                   
 
-   ldr r0, = coordenadaY
-   str r1, [r0] @r1 tiene el valor pasado de asciiADecim y lo guarda en r0
+   ldr r3, = coordenadaY
+   str r1, [r3] @r1 tiene el valor pasado a asciiADecim y lo guarda en r3
 
    bx lr
 .fnend
-
