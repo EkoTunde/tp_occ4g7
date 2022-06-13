@@ -1,18 +1,18 @@
 .data
-valorInt: .word 0
-posCuerdaX: .byte 0x7 
-posCuerdaY: .byte 0xE
-coordenadaX: .word 0
-coordenadaY: .word 0
-fallasteTiro: .asciz "Te equivocaste, Perdiste el juego!!\n"
-acertasteTiro:  .asciz "Diste en el blanco! Ganaste el juego!!\n"
-ingresarX: .asciz "Ingrese la coordenada x para el disparo: \n"
-ingresarY: .asciz "Ingrese la coordenada y para el disparo: \n"
+    valorInt: .word 0
+    posCuerdaX: .byte 0x7 
+    posCuerdaY: .byte 0xE
+    coordenadaX: .word 0
+    coordenadaY: .word 0
+    fallasteTiro: .asciz "Te equivocaste, Perdiste el juego!!\n"
+    acertasteTiro:  .asciz "Diste en el blanco! Ganaste el juego!!\n"
+    ingresarX: .asciz "Ingrese la coordenada x para el disparo: \n"
+    ingresarY: .asciz "Ingrese la coordenada y para el disparo: \n"
 
 .text
  // Entrada r0 <- dirección de memoria del dato ingresado
  //Salida r1 el ascii en formato numero.
-aciiADecim:
+asciiADecim:
 
     .fnstart
 	 push {r0,lr}
@@ -127,10 +127,10 @@ aciertaDisparoX:
    push {r0,lr} 
         ldr r2,[r0] @cargo en r2 la coordenada x de la cuerda
         cmp r2,r5 @ r5 tiene la coordenada ingresada por el usuario (ver rutina capturarX)
-        beq acierta
-        bal noAcierta
+        beq aciertaX
+        bal noAciertaX
         
-        aciertoX:
+        aciertaX:
                 mov r1, #1
         noAciertaX:
                 mov r1, #0
@@ -147,10 +147,10 @@ aciertaDisparoY:
    push {r1,lr} 
         ldr r6,[r1]
         cmp r6,r3  @ r3 tiene la coordenada Y ingresada por el usuario (ver rutina capturarY)
-        beq acierta
-        bal noAcierta
+        beq aciertaY
+        bal noAciertaY
         
-        aciertoY:
+        aciertaY:
                 mov r2, #1
         noAciertaY:
                 mov r2, #0
@@ -164,7 +164,6 @@ aciertaDisparoY:
   // Entrada r2 <- resultado de la rutina aciertaY
   // salida: imprimir los carteles de finalizacion del juego 
 validarDisparo:
-
 .fnstart
    push {r1,r2,lr} 
         cmp r1,r2
@@ -195,7 +194,7 @@ validarDisparo:
 
 		 bl capturarX
 		 bl capturarY
-		 bl aciertaDisparoX
+         bl aciertaDisparoX
 		 bl aciertaDisparoY
 		 bl validarDisparo
 	
