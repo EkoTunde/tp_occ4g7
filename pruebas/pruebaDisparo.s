@@ -1,5 +1,5 @@
 .data
-valorInt .word 0
+valorInt: .word 0
 posCuerdaX: .byte 0x7 
 posCuerdaY: .byte 0xE
 coordenadaX: .word 0
