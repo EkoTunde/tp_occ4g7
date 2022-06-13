@@ -14,7 +14,7 @@ ingresarY: .asciz "Ingrese la coordenada y para el disparo: \n"
 @Imprime un mensaje indicando que se ingrese la coordenada X del disparo.
 imprimirPedidoX:
 .fnstart
-   mov r7, #4              @Tipo de interrupcion  = lectura por teclado
+   mov r7, #4              @Tipo de interrupcion  = salida por pantalla
    mov r0, #1              @Salida de cadena
    mov r2, #43            @Tamaño de la cadena, 
    ldr r1, = ingresarX
@@ -25,7 +25,7 @@ imprimirPedidoX:
 @Imprime un mensaje indicando que se ingrese la coordenada Y del disparo.
 imprimirPedidoY:
 .fnstart
-   mov r7, #4             @Tipo de interrupcion = lectura por teclado
+   mov r7, #4             @Tipo de interrupcion = salida por pantalla 
    mov r0, #1             @Salida de cadena
    mov r2, #43            @Tamaño de la cadena
    ldr r1, = ingresarY
@@ -138,18 +138,18 @@ validarDisparo:
    bal perdiste
 
    ganaste:
-	   mov r7, #4              @Tipo de interrupcion  = lectura por teclado
+	   mov r7, #4              @Tipo de interrupcion  = salida por pantalla
 	   mov r0, #1              @Salida de cadena
 	   mov r2, #40            @Tamaño de la cadena, 
-       ldr r1, = acertasteTiro
-       swi 0
+      ldr r1, = acertasteTiro
+      swi 0
 	   bal fin
 	perdiste:
-	   mov r7, #4            @Tipo de interrupcion  = lectura por teclado
+	   mov r7, #4            @Tipo de interrupcion  = salida por pantalla
 	   mov r0, #1            @Salida de cadena
 	   mov r2, #37           @Tamaño de la cadena, 
-       ldr r1, = acertasteTiro
-       swi 0
+      ldr r1, = acertasteTiro
+      swi 0
 	   bal fin
 
    bx {r1,r2,lr}
