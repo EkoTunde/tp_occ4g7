@@ -197,7 +197,7 @@ validarDisparo:
 		 bl capturarY
 		 bl aciertaDisparoX
 		 bl aciertaDisparoY
-		 bl acertasteTiro
+		 bl validarDisparo
 	
       fin:
 		mov r7, #1
