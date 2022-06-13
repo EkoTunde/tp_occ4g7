@@ -178,11 +178,11 @@ validarDisparo:
             ldr r1, = acertasteTiro
             swi 0
             bal fin
-            perdiste:
+        perdiste:
             mov r7, #4            @Tipo de interrupcion  = salida por pantalla
             mov r0, #1            @Salida de cadena
             mov r2, #37           @Tamaño de la cadena, 
-            ldr r1, = acertasteTiro
+            ldr r1, = fallasteTiro
             swi 0
             bal fin
 
