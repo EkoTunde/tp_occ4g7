@@ -125,6 +125,7 @@ capturarY:
 aciertaDisparoX:
 .fnstart
    push {r0,lr} 
+        ldr r0,=posCuerdaX
         ldr r2,[r0] @cargo en r2 la coordenada x de la cuerda
         cmp r2,r5 @ r5 tiene la coordenada ingresada por el usuario (ver rutina capturarX)
         beq aciertaX
@@ -145,6 +146,7 @@ aciertaDisparoX:
 aciertaDisparoY:
 .fnstart
    push {r1,lr} 
+        ldr r1,=posCuerdaY
         ldr r6,[r1]
         cmp r6,r3  @ r3 tiene la coordenada Y ingresada por el usuario (ver rutina capturarY)
         beq aciertaY
