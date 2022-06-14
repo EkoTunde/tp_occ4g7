@@ -2,8 +2,11 @@
     valorInt: .word 0
     posCuerdaX: .byte 0x7 
     posCuerdaY: .byte 0xE
-    coordenadaX: .word 0
-    coordenadaY: .word 0
+    cadCoordX: .asciz "  "
+    cadCoordY: .asciz "  "
+
+    coordenadaX: .word 0 @GUARDA EL VALO AsciiAnum
+    coordenadaY: .word 0 @GUARDA EL VALO AsciiAnum
     fallasteTiro: .asciz "Te equivocaste, Perdiste el juego!!\n"
     acertasteTiro:  .asciz "Diste en el blanco! Ganaste el juego!!\n"
     ingresarX: .asciz "Ingrese la coordenada x para el disparo: \n"
@@ -22,13 +25,13 @@ asciiADecim:
         
             whileAsciiNum:
             
-                ldrb r5, [r0] @obtengo el primer caracter
-                cmp r5,#00 @ compari si es Caracter Nulo
+                ldrb r8, [r0] @obtengo el primer caracter
+                cmp r8,#00 @ compari si es Caracter Nulo
                 beq guardarValor
                 mul r2,r10 @multimplicamos x 10 para desplazar 1 pos en decimal
                 add r0,#1 @posiciono el siguiente caracter #1(byte)
-                sub r5, #0x30 // resta el valor 30 en hexa para obtener del ascii valor entero en decimal
-                add r2,r5  //guardo en r2 el primer numero
+                sub r8, #0x30 // resta el valor 30 en hexa para obtener del ascii valor entero en decimal
+                add r2,r8  //guardo en r2 el primer numero
                 bal whileAsciiNum
             
             guardarValor:
@@ -77,11 +80,9 @@ capturarX:
    mov r7, #3                    @Tipo de interrupcion = lectura por teclado
    mov r0, #0                    @Ingresa cadena            
    mov r2, #2                    @Tamaño de la cadena // Con cuánto me quedo del input
-   ldr r1, = coordenadaX
+   ldr r0, = cadCoordX           @ guardo la direccion de la cadena ingresada en r0 PARA USAR EN AsciiAnum  
    swi 0
 
-   ldr r0, = coordenadaX @cargo en r0 la direccion de coordenada X para usarla
-						 @en la subrutina asciiADecim 
 
    push {lr}                     
    bl asciiADecim
@@ -104,11 +105,9 @@ capturarY:
    mov r7, #3                  @Tipo de interrupcion = lectura por teclado.
    mov r0, #0                  @Ingresa cadena
    mov r2, #2                  @Tamaño de la cadena.// Con cuánto me quedo del input
-   ldr r1, = coordenadaY
+   ldr r0, = cadCoordY         @ guardo la direccion de la cadena ingresada en r0 PARA USAR EN AsciiAnum  
    swi 0
 
-   ldr r0, = coordenadaY  @cargo en r0 la direccion de la coordenada Y para usarla
-						  @en la subrutina asciiADecim 
 
    push {lr}                   
    bl asciiADecim
@@ -125,7 +124,7 @@ capturarY:
 aciertaDisparoX:
 .fnstart
    push {r0,lr} 
-        ldr r0,=posCuerdaX
+
         ldr r2,[r0] @cargo en r2 la coordenada x de la cuerda
         cmp r2,r5 @ r5 tiene la coordenada ingresada por el usuario (ver rutina capturarX)
         beq aciertaX
@@ -146,7 +145,7 @@ aciertaDisparoX:
 aciertaDisparoY:
 .fnstart
    push {r1,lr} 
-        ldr r1,=posCuerdaY
+       
         ldr r6,[r1]
         cmp r6,r3  @ r3 tiene la coordenada Y ingresada por el usuario (ver rutina capturarY)
         beq aciertaY
@@ -196,8 +195,13 @@ validarDisparo:
 
 		 bl capturarX
 		 bl capturarY
-         bl aciertaDisparoX
+
+       ldr r0,=posCuerdaX
+       bl aciertaDisparoX
+
+       ldr r1,=posCuerdaY
 		 bl aciertaDisparoY
+
 		 bl validarDisparo
 	
       fin:
