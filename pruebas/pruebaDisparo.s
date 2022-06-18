@@ -1,5 +1,5 @@
 .data
-    valorInt: .word 0
+
     posCuerdaX: .word 0x7 
     posCuerdaY: .word 0xe
     cadCoordX: .asciz "    "
@@ -13,7 +13,7 @@
 
 .text
 /**
-  *  Convierte un numero en ascii a su equivalente en decimal.
+  *  Convierte un numero en ascii a su equivalente en hexadecimal.
   *  ---------------------------------------------------------
   *  Entrada r0: puntero a la cadena.
   *  ---------------------------------------------------------
@@ -50,9 +50,13 @@
       finAsciiADecim:
         pop {r0, r2, r3, r4, lr}
         bx lr
-.fnend   
-
-@Imprime un mensaje indicando que se ingrese la coordenada X del disparo.
+.fnend  
+ 
+  /**
+  *   ---------------------------------------------------------------
+  *   Imprime un mensaje indicando que se ingrese la coordenada X del disparo.
+  *   ---------------------------------------------------------------
+  */
 imprimirPedidoX:
 .fnstart
    mov r7, #4              @Tipo de interrupcion  = salida por pantalla
@@ -63,7 +67,11 @@ imprimirPedidoX:
    bx lr
 .fnend
 
-@Imprime un mensaje indicando que se ingrese la coordenada Y del disparo.
+  /**
+  *   ---------------------------------------------------------------
+  *   Imprime un mensaje indicando que se ingrese la coordenada Y del disparo.
+  *   ---------------------------------------------------------------
+  */
 imprimirPedidoY:
 .fnstart
    mov r7, #4             @Tipo de interrupcion = salida por pantalla 
@@ -74,9 +82,14 @@ imprimirPedidoY:
    bx lr
 .fnend
 
-
- // Entrada r0 <- dirección de memoria del dato ingresado
- //Salida r4  <- el valor X transformado a AsciiAnum (hexa).
+   /**
+  *   Lee el ingreso por teclado de la coordenada X en asciz y lo
+  *   y convierte en hexadecimal
+  *   ---------------------------------------------------------------
+  *   Entrada r0: direccion memoria de la coordenada Y ingresada 
+  *   ---------------------------------------------------------------
+  *   Salida r4: la coordenada X transformada de Asciz a Hexadecimal.
+  */
 inputX:
 .fnstart
    push {lr}                     
@@ -100,8 +113,17 @@ inputX:
    bx lr
 .fnend
 
- // Entrada r0 <- dirección de memoria del dato ingresado
- //Salida r11 <- el valor Y transformado a AsciiAnum (hexa).
+
+ 
+ 
+   /**
+  *   Lee el ingreso por teclado de la coordenada Y en asciz y lo
+  *   y convierte en hexadecimal
+  *   ---------------------------------------------------------------
+  *   Entrada r0: direccion memoria de la coordenada Y ingresada 
+  *   ---------------------------------------------------------------
+  *   Salida r11: la coordenada Y transformada de Asciz a Hexadecimal.
+  */
 inputY:
 .fnstart
    push {lr}                   
@@ -125,8 +147,16 @@ inputY:
    bx lr
 .fnend
 
- // Entrada r0 <- dirección de memoria de la pos X de la cuerda
- //Salida r6 <- devuelve 1: si acerto el dispa, 0: si no lo acierta
+
+  /**
+  *   Chequea si el input de la coordenada X coincide con la posicion
+  *   X de la cuerda, y devuelve 1:si acierta 0:no acierta 
+  *   ---------------------------------------------------------------
+  *   Entrada r0: direccion memoria de la posicion X de la cuerda
+  *   ---------------------------------------------------------------
+  *   Salida r6: 1:si acierta 0:no acierta 
+  */
+ 
 aciertaDisparoX:
 .fnstart
    push {r2,r4,lr}
@@ -134,7 +164,7 @@ aciertaDisparoX:
         ldr r4, [r4]   
          
         ldr r0,=posCuerdaX
-        ldr r2,[r0] @cargo en r2 la coordenada x de la cuerda
+        ldr r2,[r0] @cargo en r2 la coordenada X de la cuerda
 
         cmp r2,r4 @ r4 tiene la coordenada ingresada por el usuario (ver rutina capturarX)
         beq aciertaX
@@ -155,7 +185,17 @@ aciertaDisparoX:
 .fnend
 
 
- //Salida r2 <- devuelve 1: si acerto el dispa, 0: si no lo acierta
+
+ 
+  /**
+  *   Chequea si el input de la coordenada Y coincide con la posicion
+  *   Y de la cuerda, y devuelve 1:si acierta 0:no acierta 
+  *   ---------------------------------------------------------------
+  *   Entrada r0: direccion memoria de la posicion X de la cuerda
+  *   ---------------------------------------------------------------
+  *   Salida r10: 1:si acierta 0:no acierta 
+  */ 
+ 
 aciertaDisparoY:
 .fnstart
    push {r5,r11,lr} 
@@ -163,7 +203,7 @@ aciertaDisparoY:
         ldr r11, [r11]  
 
         ldr r8,=posCuerdaY
-        ldr r5,[r8]
+        ldr r5,[r8] @cargo en r11 la coordenada Y de la cuerda
         
         cmp r5,r11  @ r11 tiene la coordenada Y ingresada por el usuario (ver rutina capturarY)
 		beq aciertaY
@@ -182,17 +222,25 @@ aciertaDisparoY:
    bx lr
 .fnend
 
+
+  /**
+  *   Chequea si las 2 salidas de las subrutinas: 
+  *   aciertaDisparoX (r6) y aciertaDisparoY(r10) si ambas son iguales a 1
+  *   ---------------------------------------------------------------
+  *   Salida: imprime una cadena diciendo si acierta o no el disparo 
+  */ 
+
 validarDisparo:
 .fnstart
    push {r6,r10,lr} 
-      cmp r6, #1
+      cmp r6, #1  @r6 Contiene el aciertaDisparoX
 		beq puedeGanar
 		bal apuntoPerder
 		
 		apuntoPerder:
-			cmp r10,#2  // no importa el estado del registro, pierde Directo para que pueda mostrar el msj
+			cmp r10,#2  // no importa el estado del registro, pierde directo para que pueda mostrar el msj
 			            // y no corte el ingreso de la coordenada Y
-         bne perdiste
+            bne perdiste
 		
 		
 		puedeGanar:
@@ -215,10 +263,10 @@ validarDisparo:
             swi 0
             bal fin
 
-
    pop {r6,r10,lr}
    bx lr
 .fnend
+
 .global main
    main:
 
