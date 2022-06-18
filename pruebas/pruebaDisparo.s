@@ -129,17 +129,20 @@ inputY:
  //Salida r6 <- devuelve 1: si acerto el dispa, 0: si no lo acierta
 aciertaDisparoX:
 .fnstart
-   push {r2,r4,lr} 
+   push {r2,r4,lr}
+        ldr r4, = coordenadaX      
+        ldr r4, [r4]   
+         
         ldr r0,=posCuerdaX
         ldr r2,[r0] @cargo en r2 la coordenada x de la cuerda
+
         cmp r2,r4 @ r4 tiene la coordenada ingresada por el usuario (ver rutina capturarX)
-        beq aciertaX
-        bal noAciertaX
-        
-        aciertaX:
-                mov r6, #1
+        bne noAciertaX
+        // correjir toda esta parte
+        //↓↓↓↓↓↓↓↓↓↓
+        mov r6, #1
         noAciertaX:
-                mov r6, #0
+            mov r6, #0
 
    pop {r2,r4,lr}
    bx lr
@@ -150,16 +153,20 @@ aciertaDisparoX:
 aciertaDisparoY:
 .fnstart
    push {r5,r11,lr} 
+        ldr r11, = coordenadaY      
+        ldr r11, [r11]  
+
         ldr r8,=posCuerdaY
         ldr r5,[r8]
-        cmp r5,r11  @ r11 tiene la coordenada Y ingresada por el usuario (ver rutina capturarY)
-        beq aciertaY
-        bal noAciertaY
         
-        aciertaY:
-                mov r10, #1
+        cmp r5,r11  @ r11 tiene la coordenada Y ingresada por el usuario (ver rutina capturarY)
+        bne noAciertaY
+        // correjir toda esta parte
+        //↓↓↓↓↓↓↓↓↓↓
+        mov r10, #1
+        // QUE PUEDO PONER ACA PARA QUE NO SE EJERCUTE el "noAciertaY"
         noAciertaY:
-                mov r10, #0
+            mov r10, #0
 
    pop {r5,r11,lr}
    bx lr
@@ -183,8 +190,8 @@ validarDisparo:
 		  bal perdiste
 		
         ganaste:
-            mov r7, #4              @Tipo de interrupcion  = salida por pantalla
-            mov r0, #1              @Salida de cadena
+            mov r7, #4             @Tipo de interrupcion  = salida por pantalla
+            mov r0, #1             @Salida de cadena
             mov r2, #40            @Tamaño de la cadena, 
             ldr r1, = acertasteTiro
             swi 0
