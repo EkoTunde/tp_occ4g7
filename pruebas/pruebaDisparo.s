@@ -137,12 +137,18 @@ aciertaDisparoX:
         ldr r2,[r0] @cargo en r2 la coordenada x de la cuerda
 
         cmp r2,r4 @ r4 tiene la coordenada ingresada por el usuario (ver rutina capturarX)
-        bne noAciertaX
-        // correjir toda esta parte
-        //↓↓↓↓↓↓↓↓↓↓
-        mov r6, #1
+        beq aciertaX
+		bal noAciertaX
+		
+		aciertaX:
+		  mov r6, #1
+		  bal nada1
+		  
         noAciertaX:
-            mov r6, #0
+          mov r6, #0
+		
+		nada1:
+		  nop
 
    pop {r2,r4,lr}
    bx lr
@@ -160,13 +166,17 @@ aciertaDisparoY:
         ldr r5,[r8]
         
         cmp r5,r11  @ r11 tiene la coordenada Y ingresada por el usuario (ver rutina capturarY)
-        bne noAciertaY
-        // correjir toda esta parte
-        //↓↓↓↓↓↓↓↓↓↓
-        mov r10, #1
-        // QUE PUEDO PONER ACA PARA QUE NO SE EJERCUTE el "noAciertaY"
+		beq aciertaY
+		bal noAciertaY
+		
+		aciertaY:
+          mov r10, #1
+		  bal nada2
+           
         noAciertaY:
-            mov r10, #0
+          mov r10, #0
+		nada2:
+		  nop
 
    pop {r5,r11,lr}
    bx lr
@@ -212,11 +222,11 @@ validarDisparo:
 .global main
    main:
 
-		 bl inputX
+	   bl inputX
        bl aciertaDisparoX
        bl inputY
        bl aciertaDisparoY
-		 bl validarDisparo
+	   bl validarDisparo
 	
    fin:
 		mov r7, #1
