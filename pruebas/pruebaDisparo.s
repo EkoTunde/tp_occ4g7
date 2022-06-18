@@ -180,8 +180,9 @@ validarDisparo:
 		bal apuntoPerder
 		
 		apuntoPerder:
-			cmp r10,#2 // no importa el estado del registro, pierde Directo para que pueda mostrar el msj
-			bne perdiste
+			cmp r10,#2  // no importa el estado del registro, pierde Directo para que pueda mostrar el msj
+			            // y no corte el ingreso de la coordenada Y
+         bne perdiste
 		
 		
 		puedeGanar:
