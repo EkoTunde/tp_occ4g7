@@ -118,4 +118,43 @@ class Pseudo {
         }
         return true;
     }
+
+    void dibujarPibito() {
+        int vidas = 4;
+        if (vidas < 7) {
+            // dibujarCabeza
+        } else {
+            // ' '
+        }
+        if (vidas < 6) {
+            // dibujarCuerpo
+        } else {
+            // ' '
+        }
+        if (vidas < 5) {
+            // dibujarBrazoIzq
+        } else {
+            // ' '
+        }
+        if (vidas < 4) {
+            // dibujarBrazoDer
+        } else {
+            // ' '
+        }
+        if (vidas < 3) {
+            // dibujarAbdomen
+        } else {
+            // ' '
+        }
+        if (vidas < 2) {
+            // dibujarPiernaIzq
+        } else {
+            // ' '
+        }
+        if (vidas < 1) {
+            // dibujarPiernaDer
+        } else {
+            // ' '
+        }
+    }
 }

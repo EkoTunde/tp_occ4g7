@@ -1,0 +1,51 @@
+Arreglar funciones:
+    ✔ imprimir @done (6/20/2022, 2:50:08 PM)
+    ✔ imprimirLinea @done (6/20/2022, 2:50:12 PM)
+    ✔ borrarEImprimir @done (6/20/2022, 2:50:17 PM)
+    ✔ clearScreen @done (6/20/2022, 2:50:25 PM)
+    ✔ imprimirMapa @done (6/20/2022, 2:51:42 PM)
+    ✔ quedanLetrasPorAdivinar @done (6/20/2022, 2:52:33 PM)
+    ✔ agregarLetraUsadaAlMapa @done (6/20/2022, 2:57:21 PM)
+    ✔ guardarLetraUsada @done (6/20/2022, 2:57:22 PM)
+    ✔ imprimirLetrasRestantes @done (6/20/2022, 2:58:26 PM)
+    ✔ imprimirJuegoGanado @done (6/20/2022, 2:59:29 PM)
+    ✔ encriptarLetrasNoEncontradas @done (6/20/2022, 3:06:37 PM)
+    ✔ imprimirJuegoPerdido @done (6/20/2022, 3:12:59 PM)
+    ✔ actualizarVidas @done (6/20/2022, 3:12:59 PM)
+    ✔ reemplazarLetraEnMatriz @done (6/20/2022, 3:13:07 PM)
+    ✔ actualizarParteEnMapa @done (6/20/2022, 3:19:00 PM)
+    ✔ actualizarCabezaEnMapa @done (6/20/2022, 3:19:07 PM)
+    ✔ actualizarPechoEnMapa @done (6/20/2022, 3:19:14 PM)
+    ✔ actualizarBrazoIzqEnMapa @done (6/20/2022, 3:19:17 PM)
+    ✔ actualizarBrazoDerEnMapa @done (6/20/2022, 3:19:21 PM)
+    ✔ actualizarAbdomenEnMapa @done (6/20/2022, 3:19:25 PM)
+    ✔ actualizarPiernaIzqEnMapa @done (6/20/2022, 3:19:28 PM)
+    ✔ actualizarPiernaDerEnMapa @done (6/20/2022, 3:19:32 PM)
+    ✔ actualizarPibitoEnMapa @done (6/20/2022, 3:20:41 PM)
+    ✔ actualizarPalabraActualEnMapa @done (6/20/2022, 3:24:30 PM)
+    ☐ informarResultado
+    ✔ leerDatos @done (6/20/2022, 3:24:40 PM)
+    ✔ cadenaContieneLetra @done (6/20/2022, 3:26:30 PM)
+    ✔ agregarLetraAPalabraActual @done (6/20/2022, 3:29:44 PM)
+    ✔ quitarVida @done (6/20/2022, 3:32:08 PM)
+    ✔ copiarCadenas @done (6/20/2022, 3:32:28 PM)
+    ✔ revelarPalabraOculta @done (6/20/2022, 3:32:46 PM)
+    ✔ usuarioAcertoPalabra @done (6/20/2022, 3:33:10 PM)
+    ✔ usuarioAcertoLetra @done (6/20/2022, 3:33:35 PM)
+    ✔ procesarDatos @done (6/20/2022, 6:50:11 PM)
+    ✔ pedirLetra @done (6/20/2022, 3:40:23 PM)
+    ✔ jugar @done (6/20/2022, 6:06:06 PM)
+    ✔ asciiADecim @done (6/20/2022, 6:06:16 PM)
+    ✔ cargarPalabra @done (6/20/2022, 6:06:20 PM)
+    ✔ elegirPalabra @done (6/20/2022, 6:06:24 PM)
+
+Sacar de imprimirMsjJuegoGanado:
+    ☐ encriptarLetrasNoEncontradas
+    ☐ actualizarPalabraActualEnMapa
+    ☐ imprimirMapa
+
+Sacar de imprimirJuegoPerdido:
+    ☐ encriptarLetrasNoEncontradas
+    ☐ actualizarPalabraActualEnMapa
+    ☐ imprimirMapa
+    

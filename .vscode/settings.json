@@ -1,0 +1,16 @@
+{
+    "todohighlight.defaultStyle": {
+        "color": "#a6e22e",
+        "backgroundColor": "transparent",
+    },
+    "todohighlight.keywordsPattern": "bl |bx |ldr |ldrb |str |strb |bx |\\sbal |bne |beq |blt |ble |bgt |bge |swi |#\\w+|#'[\\w\\s,_ ]'|#'([\n]+)'",
+    "todohighlight.include": [
+        "**/*.s"
+    ],
+    "todohighlight.exclude": [
+        "**/*.java",
+        "**/*.py",
+        "**/*.json",
+        "**/*.js"
+    ],
+}

@@ -1,0 +1,47 @@
+Imprimir Mapa - Para imprimir el mapa con todos los datos actualizados
+----------------------------------------------------------------------
+1) obtener puntero del mapa
+2) obtener tamaño del mapa
+3) llamar a imprimir string con el puntero y el tamaño
+
+
+
+Leer Datos - Para leer la letra que elige el jugador
+----------------------------------------------------
+
+
+
+
+
+Procesar Datos - Para determinar si la letra elegida pertenece a la palabra oculta y si es así actualizar el mapa a imprimir
+----------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+Informar Resultado - Para informar por pantalla si hay ganador (se adivinó la palabra ) o si el juego terminó por la cantidad de vidas (intentos)
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+Elegir Palabra - Elige una palabra al azar de una lista de palabras disponibles que estará oculta para adivinar
+---------------------------------------------------------------------------------------------------------------
+1) Declarar una lista de palabras
+2) Obtener el largo de la lista
+3) Obtener un numero entre 0 y el largo de la lista (sin incluir)
+4) Guardar la palabra del indice especificado en una etiqueta
+
+
+
+
+Reemplazar letra arriesgada en el mapa
+--------------------------------------
+1) fila = fila donde va la palabra oculta
+2) primer_col = la columna donde iria la primera letra de la palabra oculta
+3) contador = primer_col
+4) iteramos cada letra de la palabra secreta
+    a) si la letra es igual a la letra arriesgada:
+        i) mapa[fila][contador] = letra arriesgada
+    c) contador = contador + 1
