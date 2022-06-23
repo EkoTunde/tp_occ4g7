@@ -75,50 +75,134 @@
              .asciz "carnaval," //19
              .asciz "plancha," //20
 
-    preguntas:  .asciz "-¿Cuántos metros de altura tiene la gran pirámide de Guiza?," //1
-                .asciz "¿Cuántos años luz de distancia nos separan de la galaxia Andrómeda, la más cercana a la vía láctea?," //2
-                .asciz "¿Cuántos segundos tarda la luz del sol en llegar a la tierra?," //3
-                .asciz "¿Cuántos billones de habitantes hay en la Tierra en 2022?," //4
-                .asciz "¿Cuántos millones de bitcoins pueden existir?," //5
-                .asciz "¿Cuándo acabó la II Guerra Mundial?," //6
-                .asciz "¿En qué año llegó Cristóbal Colón a América?," //7
-                .asciz "¿Cuántas copias vendió es el disco Thriller, de Michael Jackson, el más vendido de la historia?," //8
-                .asciz "¿Cuántos km2 mide Rusia, el país más grande del mundo?," //9
-                .asciz "Si 50 es el 100%, ¿cuánto es el 90%?," //10
-                .asciz "¿Cuántos habitantes posee China, el país más poblado de la Tierra?," //11
-                .asciz "¿Cuántos números primos hay entre el 1 y el 100?," //12
-                .asciz "¿Cuántos átomos en fila caben en el diámetro de un cabello humano (unas 80 micras)?," //13
-                .asciz "¿Cuál es el número atómico del Europio (Eu)?," //14
-                .asciz "¿Cuánto vale el número pi?," //15
-                .asciz "¿Cuáles son las 7 primeras cifras de pi detrás de la coma?," //16
-                .asciz "¿A cuántos hercios (Hz) está afinada la tecla A4, o la 440?," //17
-                .asciz "¿En qué año apareció en el mercado el primer videojuego protagonizado por Super Mario?," //18
-                .asciz "¿Qué porcentaje de la población de Camboya es budista, el país con mayor densidad poblacional con estas características?," //20
-                .asciz "¿En qué año se produce la Revolución Francesa?,"
-                // ¿Cuántos metros de altura tiene la gran pirámide de Guiza? Rta:138 metros
-                // ¿Cuántos años luz de distancia nos separan de la galaxia Andrómeda, la más
-                // cercana a la vía láctea? Rta: 2 millones de años luz
-                // ¿Cuántos segundos tarda la luz del sol en llegar a la tierra? Rta: 8 minutos 19
-                // segundos
-                // ¿Cuántos billones de habitantes hay en la Tierra en 2022? Rta: aproximadamente 8
-                // billones de personas
-                // ¿Cuántos millones de bitcoins pueden existir? Rta: 21 millones
-                // ¿Cuándo acabó la II Guerra Mundial? 1945
-                // ¿En qué año llegó Cristóbal Colón a América? 1942
-                // ¿Cuántas copias vendió es el disco Thriller, de Michael Jackson, el más vendido de la historia? 65 millones
-                // ¿Cuántos km2 mide Rusia, el país más grande del mundo? Rusia: 17.075.200 km².
-                // Si 50 es el 100%, ¿cuánto es el 90%? 45
-                // ¿Cuántos habitantes posee China, el país más poblado de la Tierra? 1.402 miles de millones
-                // ¿Cuántos números primos hay entre el 1 y el 100? 25
-                // ¿Cuántos átomos en fila caben en el diámetro de un cabello humano (unas 80 micras)? cabrían 800.000 átomos en fila
-                // ¿Cuál es el número atómico del Europio (Eu)? 63
-                // ¿Cuánto vale el número pi?
-                // ¿Cuáles son las 7 primeras cifras de pi detrás de la coma? 1415926
-                // ¿A cuántos hercios (Hz) está afinada la tecla A4, o la 440?
-                // ¿En qué año apareció en el mercado el primer videojuego protagonizado por Super Mario? 1981
-                // ¿Cuántos corazones tienen los pulpos? 3 
-                // ¿Qué porcentaje de la población de Camboya es budista, el país con mayor densidad poblacional con estas características? 90
-                // ¿En qué año se produce la Revolución Francesa? 1789
+    
+    preg1: .asciz "Cuantos metros de altura tiene la gran piramide de Guiza?" //1
+    rta1: .word 138
+    maxRta1: .word 140
+    minRta1: .word 130
+
+    preg2: .asciz "Cuantos anios luz de distancia nos separan de la galaxia Andromeda, la mas cercana a la via lactea?" //2
+    rta2: .word 2000000
+    .equ offsetRta2, rta2/100
+    // 2000000
+    maxRta2: .word 2500000
+    minRta2: .word 1500000
+
+    preg3: .asciz "Cuantos segundos tarda la luz del sol en llegar a la tierra?" //3
+    rta3: .word 489
+    maxRta3: .word 500
+    minRta3: .word 400
+
+    preg4: .asciz "Cuantos billones de habitantes hay en la Tierra en 2022?" //4
+    rta4: .word 8
+    maxRta4: .word 10
+    minRta4: .word 6
+
+    preg5: .asciz "Cuantos millones de bitcoins pueden existir?" //5
+    rta5: .word 21
+    maxRta5: .word 21
+    minRta5: .word 10
+
+    preg6: .asciz "Cuando acabo la II Guerra Mundial?" //6
+    rta6: .word 1945
+    maxRta6: .word 1946
+    minRta6: .word 1944
+
+    preg7: .asciz "En que anio llego Cristobal Colon a America?" //7
+    rta7: .word 1492
+    maxRta7: .word 1500
+    minRta7: .word 1490
+
+    preg8: .asciz "Cuantas millones de copias vendio el disco Thriller, de Michael Jackson, el mas vendido de la historia?" //8
+    rta8: .word 65
+    maxRta8: .word 70
+    minRta8: .word 60
+
+    preg9: .asciz "Cuantos km2 mide Rusia, el pais mas grande del mundo? Psst: son varios millones ;)" //9
+    rta9: .word 17075200
+    maxRta9: .word 18000000
+    minRta9: .word 17000000
+
+    preg10: .asciz "De cuantos miles de millones de USD fue el PBI de Argentina al 2020?" //10
+    rta10: .word 383
+    maxRta10: .word 400
+    minRta10: .word 350
+
+    preg11: .asciz "Cuantos miles de millones de habitantes posee China, el pais mas poblado de la Tierra?" //11
+    rta11: .word 1402
+    maxRta11: .word 1450
+    minRta11: .word 1350
+
+    preg12: .asciz "Cuantos numeros primos hay entre el 1 y el 100?" //12
+    rta12: .word 25
+    maxRta12: .word 27
+    minRta12: .word 23
+
+    preg13: .asciz "Cuantos atomos en fila caben en el diametro de un cabello humano (unas 80 micras)?" //13
+    rta13: .word 800000
+    maxRta13: .word 800000
+    minRta13: .word 800000
+
+    preg14: .asciz "Cual es el numero atomico del Europio (Eu)?" //14
+    rta14: .word 63
+    maxRta14: .word 65
+    minRta14: .word 60
+
+    preg15: .asciz "Cuantos km mide el Amazonas?" //15
+    rta15: .word 6992
+    maxRta15: .word 7000
+    minRta15: .word 6800
+
+    preg16: .asciz "Cuanto vale 'pi' en sus 7 primeras posiciones detras de la coma?" //16
+    rta16: .word 1415926
+    maxRta16: .word 1500000
+    minRta16: .word 1400000
+
+    preg17: .asciz "A cuantos hercios (Hz) esta afinada la tecla A4, o 'la 440'?" //17
+    rta17: .word 440000
+    maxRta17: .word 450000
+    minRta17: .word 400000
+
+    preg18: .asciz "En que anio aparecio por primera vez en un videojuego Jumpman, quien luego seria conocido como Super Mario?" //18
+    rta18: .word 1981
+    maxRta18: .word 1985
+    minRta18: .word 1980
+
+    preg19: .asciz "Que porcentaje de la poblacion de Camboya es budista, el pais con mayor densidad poblacional con esta caracteristica?" //20
+    rta19: .word 90
+    maxRta19: .word 95
+    minRta19: .word 85
+
+    preg20: .asciz "En que anio se produce la Revolucion Francesa?"
+    rta20: .word 1789
+    maxRta20: .word 1785
+    minRta20: .word 1790
+
+    preguntaSeleccionada: .asciz "                                                                                                                        "
+    rtaSeleccionada: .word 0
+    maxRtaSeleccionada: .word 0
+    minRtaSeleccionada: .word 0
+
+    preguntas:  .asciz "-Cuantos metros de altura tiene la gran piramide de Guiza?," //1
+                .asciz "Cuantos anios luz de distancia nos separan de la galaxia Andromeda, la mas cercana a la via lactea?," //2
+                .asciz "Cuantos segundos tarda la luz del sol en llegar a la tierra?," //3
+                .asciz "Cuantos billones de habitantes hay en la Tierra en 2022?," //4
+                .asciz "Cuantos millones de bitcoins pueden existir?," //5
+                .asciz "Cuando acabo la II Guerra Mundial?," //6
+                .asciz "En que anio llego Cristobal Colon a America?," //7
+                .asciz "Cuantas copias vendio es el disco Thriller, de Michael Jackson, el mas vendido de la historia?," //8
+                .asciz "Cuantos km2 mide Rusia, el pais mas grande del mundo?," //9
+                .asciz "Si 50 es el 100%, cuanto es el 90%?," //10
+                .asciz "Cuantos habitantes posee China, el pais mas poblado de la Tierra?," //11
+                .asciz "Cuantos numeros primos hay entre el 1 y el 100?," //12
+                .asciz "Cuantos atomos en fila caben en el diametro de un cabello humano (unas 80 micras)?," //13
+                .asciz "Cual es el numero atomico del Europio (Eu)?," //14
+                .asciz "Cuanto vale el numero pi?," //15
+                .asciz "Cuales son las 7 primeras cifras de pi detras de la coma?," //16
+                .asciz "A cuantos hercios (Hz) esta afinada la tecla A4, o la 440?," //17
+                .asciz "En que anio aparecio en el mercado el primer videojuego protagonizado por Super Mario?," //18
+                .asciz "Que porcentaje de la poblacion de Camboya es budista, el pais con mayor densidad poblacional con estas caracteristicas?," //20
+                .asciz "En que anio se produce la Revolucion Francesa?,"
 
     msjPedirX: .asciz "Ingrese la coordenada x para el disparo: "
     lenMsjPedirX = . - msjPedirX
@@ -126,10 +210,92 @@
     lenMsjPedirY = . - msjPedirY
 
     posCuerdaX: .word 0x7
-    posCuerdaY: .word 0xe
+    posCuerdaY: .word 0x17
+
+    /* Para manejar la aleatoriedad */
+    seed: .word 1
+    const1: .word 1103515245
+    const2: .word 12345
+    numero: .word 0
+
+    time: .double
+
+    //norm: .word 0x7fffff00
+    temp: .byte 0
 
 /* DEFINICION DEL CODIGO DEL PROGRAMA */
 .text
+
+    /**
+    *   Devuelve la hora actual en milisegundos (epoch)
+    *   -------------------------------------------------
+    *   Salida r0: entero que representa los milisegundos
+    */
+    currentTimeInMilis:
+        .fnstart
+            push {r7, lr}
+            ldr r0,=time    // donde se va a guardar la hora actual en milisegundos
+            mov r7, #78     // Opcion "pedir la hora" para paserla a SWI
+            swi 0           // SWI para pedir la hora
+            ldr r0,=time
+            ldr r0, [r0]    // r0 <- el resultado
+            pop {r7, lr}
+        .fnend
+
+    /**
+    *   Entrada r0: dividendo - un numero entero
+    *   Entrada r1: divisor - un numero entero
+    *   ----------------------------------------
+    *   Salida r0: cociente
+    *   Salida r1: resto
+    */
+    dividir:
+        .fnstart
+            push {r2, r3}
+            mov r2, r0  // resto: lo que va quedando del dividendo cuando resto
+            mov r3, #0  // cociente: el resultado de la division
+            
+            compara:
+                cmp r2, r1
+                bge resta
+                bal salir
+
+            resta:
+                sub r2, r2, r1  // resto -= divisor
+                add r3, #1      // cociente++
+                bal compara
+            
+            salir:
+                mov r0, r3      // r0 <- cociente (estaba en r3)
+                mov r1, r2      // r1 <- resto (estaba en r2)
+                pop {r2, r3}
+                bx lr
+        .fnend
+
+    /**
+    *   Aplica una serie de multiplicaciones, sumas y shift de bits al 
+    *   numero semilla para devolver un numero, en apariencia, aleatorio
+    *   ----------------------------------------------------------------
+    *   Entrada r0: numero semilla
+    *   ----------------------------------------------------------------
+    *   Salida r0: numero "aleatorio".
+    */
+    numeroAleatorio:
+        .fnstart
+            push {r1, r2, r3}
+            ldr r2, =const1
+            ldr r2, [r2]    // leo const1 en r2
+            mul r3, r0, r2  // r3= seed * 1103515245
+            ldr r0, =const2
+            ldr r0, [r0]    // leo const2 (12345) en r0
+            add r0, r0, r3  // r0 = r3 + 12345
+            /* Estas dos lineas devuelven "seed > >16 & 0x7fff ".
+            Con un pequenio truco evitamos el uso del AND */
+            LSL r0, # 1
+            LSR r0, # 17
+            pop {r1, r2, r3}
+            bx lr
+        .fnend
 
     /**
     *   Imprime una cadena de caracteres ASCIZ 
@@ -430,7 +596,7 @@
     /**
     *   Copia el contenido de palabraOculta en palabraActual.
     */
-    revelarPalabraOculta:
+    copiarPalabraOcultaEnActual:
         .fnstart
             push {r0, r1, lr}
 
@@ -448,7 +614,7 @@
     */
     imprimirMsjJuegoGanado:
         .fnstart
-            bl revelarPalabraOculta
+            bl copiarPalabraOcultaEnActual
             bl actualizarPalabraActualEnMapa
             bl imprimirMapa
             ldr r1, =msjJuegoGanado
@@ -785,12 +951,39 @@
       .fnend
     
     /**
+    *   Coloca espacios en la etiqueta =inputUsuario
+    */
+    limpiarInputPrevio:
+        .fnstart
+            push {r0, r1, r2, r7, lr}
+            ldr r0, =inputUsuario
+            mov r1, #0              // r1 <- i: indice para ciclar inputUsuario
+            mov r12, #' '
+            cicloLimpiarInputPrevio:
+                ldrb r2, [r0, r1]   // r2 <- inputUsuario[i]
+
+                cmp r2, #00
+                beq finLimpiarInputUsuario
+
+                strb r12, [r0, r1]  // inputUsuario[i] = ' '
+                
+                add r1, #1          // i++
+                bal cicloLimpiarInputPrevio
+
+                
+            finLimpiarInputUsuario:
+                pop {r0, r1, r2, r7, lr}
+                bx lr
+        .fnend
+
+    /**
     *   Actualiza el string al que apunta =inputUsuario 
     *   con lo que el usuario haya ingresado por consola.
     */
     leerDatos:
         .fnstart
             push {r0, r1, r2, r7, lr}
+            bl limpiarInputPrevio
             mov r7, #3                  // Funcion escanear input del usuario
             mov r0, #0                  // El bufer
             ldr r2, =lenInputUsuario    // Longitud de la cadena del input
@@ -952,18 +1145,20 @@
             usuarioArriesgoPalabra:
                 bl usuarioAcertoPalabra // r0 <- 1 o 0 (true/false) si acerto la palabra
                 cmp r0, #1
-                bne palabraIncorrecta // Si no acerto
+                bne palabraIncorrecta           // Si no acerto
+                bl copiarPalabraOcultaEnActual  // Hacemos que no queden letras por adivinar.
                 bal finProcesarDatos
 
             palabraIncorrecta:
                 // Quitar vidas
                 ldr r1, =vidas
+                
+                push {r0}
+                mov r0, #0
                 strb r0, [r1]   // vidas = 0
 
-                // Setear run = False
-                ldr r1, =run
-                strb r0, [r1]   // run = 0 (False)
-
+                pop {r0}
+                
                 // Volver
                 bal finProcesarDatos
 
@@ -1035,6 +1230,13 @@
                 pop {r0, r1, r2, lr}
                 bx lr
         .fnend
+
+    
+    /**
+    *
+    */
+    cargarDatosPreguntaAprox:
+
 
     /**
     *   TODO
@@ -1341,7 +1543,6 @@
         .fnstart
             push {r0, lr}
 
-            // ejecutar cadena de comandos:
             bl imprimirMapa
             bl informarEstado
 
@@ -1422,24 +1623,25 @@
             ldr r2, =lemario
 
             mov r3, #0  // r3 <- i: contador de caracteres para ciclar el lemario
-            mov r4, #1  // r4 <- j: contador de palabras, inicia en 1
+            // mov r4, #1  // r4 <- j: contador de palabras, inicia en 1
+            mov r4, #0  // r4 <- j: contador de palabras, inicia en 1
 
             // Si la palabra elegida es la primera, directamente cargamos las letras
-            cmp r1, #1
+            // cmp r1, #1
+            cmp r1, #0
             beq cicloCargarLetras
             // Sino, vamos al ciclo
-
             // Buscamos la palabra dentro del lemario.
             cicloBuscarPalabra:
                 cmp r4, r1
-                beq cicloCargarLetras    // Si i == numeroElegido -> cargamos las letras
+                beq cicloCargarLetras    // Si j == numeroElegido -> cargamos las letras
 
-                ldrb r5, [r2, r3]    // r5 <- inputUsuario[i]
+                ldrb r5, [r2, r3]    // r5 <- lemario[i]
 
                 cmp r5, #','
-                bne incrementarI    // Si inputUsuario[i] != ',' -> solo incrementamos i
+                bne incrementarI    // Si lemario[i] != ',' -> solo incrementamos i
 
-            // Si inputUsuario[i] == ',' -> incrementamos j
+            // Si lemario[i] == ',' -> incrementamos j
             // porque termino una palabra, y el siguiente 
             // caracter pertenece a otra palabra
             incrementarJ:
@@ -1452,7 +1654,7 @@
             cicloCargarLetras:
                 ldr r0, =palabraOculta
                 ldr r1, =palabraActual
-                mov r4, #0                // r7 <- j: contador para ciclar las posiciones de palabraOculta y palabraActual
+                mov r4, #0                // r4 <- j: contador para ciclar las posiciones de palabraOculta y palabraActual
                 mov r5, #'_'
 
                 subCicloCargarLetras:
@@ -1462,7 +1664,7 @@
                     cmp r6, #','
                     beq finCargarPalabra        // si lemario[i] == ',' -> la palabra termino, podemos salir
 
-                    strb r6, [r0, r4]           // palabraOculta[j] = inputUsuario[i]
+                    strb r6, [r0, r4]           // palabraOculta[j] = lemario[i]
                     strb r5, [r1, r4]           // palabraActual[j] = '_'
 
                     add r4, #1                  // j++
@@ -1475,7 +1677,7 @@
     
     /**
     *   Solicita al usuario que ingrese un numero en el 
-    *   rango [1, 20], y reintenta si lo ingresado esta fuera.
+    *   rango [1, 20], y reintenta si lo ingresado esta fuera del mismo.
     */
     elegirNumero:
         .fnstart
@@ -1483,14 +1685,14 @@
 
             cicloSeleccionarPalabra:
                 // Le pedimos al usuario que ingrese un numero
-                ldr r1, =solicitudNumero    // Entrada1 borrarEImprimir
-                ldr r2, =lenSolicitudNumero // Entrada2 borrarEImprimir
+                ldr r1, =solicitudNumero    // Msj "Por favor ingrese un numero del 1 al 20: "
+                ldr r2, =lenSolicitudNumero
                 bl borrarEImprimir          // Imprime el mensaje en consola
 
                 bl leerDatos      // Registramos el input del usuario (actualiza =inputUsuario)
 
                 ldr r0, =inputUsuario
-                bl asciiADecim          // r1 <- num <- asciiADecim("num")
+                bl asciiADecim          // r1 <- num <- asciiADecim("num") <- "num" esta en =inputUsuario
 
                 cmp r1, #1 
                 blt cicloSeleccionarPalabra   // Si num < 1 -> volvemos a intentar
@@ -1498,7 +1700,7 @@
                 cmp r1, #20 
                 bgt cicloSeleccionarPalabra   // Si num > 20 -> volvemos a intentar
                 
-                ldr r0, =numeroPalabraElegida
+                ldr r0, =numeroPalabraElegida   // es .word
                 str r1, [r0]
 
                 // Si esta dentro del rango [1, 20] podemos salir
@@ -1506,16 +1708,32 @@
                 bx lr
         .fnend
     
+    /**
+    *   Devuelve un numero random entre 0 y el parametro r1 - 1 -> [0, r1)
+    *   ------------------------------------------------------------------
+    *   Entrada r1: numero tope.
+    *   ------------------------------------------------------------------
+    *   Salida r1: el numero random
+    */
+    elegirNumeroRandom:
+        // 10101010 10101010 10010101 10101010 
+        .fnstart
+            push {r0, r3, lr}
+            bl currentTimeInMilis   // r0 <- semilla = epoch
+            bl numeroAleatorio      // r0 <- numero "aleatorio"
+            bl dividir              // r0: cociente, r1: resto <- dividir(r0: dividendo, r1: divisor)
+            pop {r0, r3, lr}
+            bx lr
+        .fnend
 
 .global main
 main:
+    
+    mov r1, #20             // r1 <- numeroTope (20 porque tenemos 20 palabras para elegir)
+    bl elegirNumeroRandom   // r1 <- numero "random" en rango [0, r1) <- elegirNumeroRandom(r1: numeroTope)
+    bl cargarPalabra        // Cargamos la palabra en =palabraOculta <- cargarPalabra(r1: numero)
+    bl actualizarPalabraActualEnMapa    // Actualizamos los "_ _ _ _ _" en el mapa.
 
-    bl elegirNumero
-    ldr r0, =numeroPalabraElegida
-    ldr r1, [r0]                        // r1 <- numero (word) que ingreso el usuario
-    bl cargarPalabra                    // Cargamos la palabra en =palabraOculta <- cargarPalabra(r1: numero)
-    bl actualizarPalabraActualEnMapa    // Actualizamos los "_____" en el mapa.
-  
     cicloWhile:
         bl jugar
     
