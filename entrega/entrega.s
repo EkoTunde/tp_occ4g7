@@ -1,517 +1,943 @@
-
-/* Definicion de datos */
+/* DEFINICION DE DATOS DEL PROGRAMA */
 .data
-    feedback: .asciz "Quedan x letras por adivinar."
-    vidas: .byte 7
-    msjArriesgarLetra:          .asciz "Por favor, ingrese la letra que desea arriegar: "
-    letraElegida:               .asciz " \n"
-    plantillaEscanear: .ascii "Esta es la plantilla para escanear"
-    solicitudNumero: .ascii "Por favor, ingrese un número entre 0 y 9, inclusive: "
-	vida0: .ascii "0" // IGNORENME
 
-    inputUsuario: .asciz "                                        "
-    palabraSecreta: .asciz "holanda"
-    ganado: .byte 0
-    letrasUsadas: .asciz "                           "
-    /*pregunta1: acasñdasda
-    respuestaEsperada1: sdklajdlkajsd
-    respuestaUsuario*/
+    run: .byte 1    // bool para controlar la ejecucion del programa
 
-    lemario: .asciz ""
+    mapa: .asciz "___________________________________________________|\n                                                   |\n     *** EL JUEGO DEL AHORCADO - ORGA 1 ***        |\n___________________________________________________|\n                                                   |\n                                                   |\n          +------------+                           |\n          |            |                           |\n          |                                        |\n          |                                        |\n          |                                        |\n          |                                        |\n          |                                        |\n          |                                        |\n          |                                        |\n +-------------------------------------------+     |\n |                                           |     |\n |                                           |     |\n |                                           |     |\n +-------------------------------------------+     |\n"
+    lenMapa = . - mapa
 
-
-    /* Definicion de datos */
-    /*              000000000011111111112222222222333333333344444444445555          */
-    /*              012345678901234567890123456789012345678901234567890123          */
-    mapa:   .asciz "╔══════════════════════════════════════════════════╗\n" // 00 
-            .asciz "║     *** EL JUEGO DEL AHORCADO - ORGA 1 ***       ║\n" // 01
-            .asciz "╠══════════════════════════════════════════════════╣\n" // 02
-            .asciz "║                                                  ║\n" // 03
-            .asciz "║                                                  ║\n" // 04
-            .asciz "║          ┌────────────┐                          ║\n" // 05
-            .asciz "║          │            │                          ║\n" // 06
-            .asciz "║          │            o                          ║\n" // 07
-            .asciz "║          │           /│\                         ║\n" // 08
-            .asciz "║          │            │                          ║\n" // 09
-            .asciz "║          │           / \                         ║\n" // 10
-            .asciz "║          │                                       ║\n" // 11
-            .asciz "║          │                                       ║\n" // 12
-            .asciz "║          │                                       ║\n" // 13
-            .asciz "║  ┌───────────────────────────────────────────┐   ║\n" // 14
-            .asciz "║  │                                           │   ║\n" // 15
-            .asciz "║  │                                           │   ║\n" // 16
-            .asciz "║  │                                           │   ║\n" // 17
-            .asciz "║  └───────────────────────────────────────────┘   ║\n" // 18
-            .asciz "╚══════════════════════════════════════════════════╝\n" // 19
-            longitud =.- mapa
-    
-    msjLetrasRestantes: .asciz "quedan x letras por adivinar!\n"
-    msjJuegoTermino: .asciz "Game Over"
-    msjVidasRestantes: .asciz "vida: 0"
-
-    /* 
-    ╔════════════════════════════════════════════════╗
-    ║ INDICES DE LAS PARTES DEL CUERPO DEL AHORCADO: ║
-    ╠════════════════════════════════════════════════╣
-    ║ CABEZA  -> [7][23]                             ║
-    ║ PECHO   -> [8][23]                             ║
-    ║ ABDOMEN -> [9]][23]                            ║
-    ║ BZO IZQ -> [8][22]                             ║
-    ║ BZO DER -> [8][24]                             ║
-    ║ PIE IZQ -> [10][22]                            ║
-    ║ PIE DER -> [10][24]                            ║
-    ╚════════════════════════════════════════════════╝
-    */
-   
-    /*
-    matrizAciertos: .asciz "+-------------------------------------------+      |\n"
-                        .asciz "|                                           |      |\n"
-                        .asciz "|    @a@@us                                 |      |\n"
-                        .asciz "|                                           |      |\n"
-                        .asciz "+-------------------------------------------+      |\n"
-                        longitudMatrizAciertos=.-matrizAciertos
-    */
     enter: .ascii "\n"
 
     cls: .asciz "\x1b[H\x1b[2J" //una manera de borrar la pantalla usando ansi escape codes
     lencls = .-cls
 
+    inputUsuario: .asciz "                  "   // Espacio reservado para lo que ingrese el usuario por consola
+    lenInputUsuario = . - inputUsuario
+
+    palabraOculta: .asciz "            "    // Donde ira la palabra oculta una vez elegida
+    palabraActual: .asciz "            "    // Se reemplazaran ' ' por '_' por cada letra de la palabraOculta una vez elegida
+    backup: .asciz "            "    // Se reemplazaran ' ' por '_' por cada letra de la palabraOculta una vez elegida
+    letrasUsadas: .asciz "                          "   // Donde iran las letras usadas por el usuario
+
+    vidas: .byte 7  // Vidas iniciales
+
+    /* Mensajes al usuario */
+    letrasRestantes: .asciz "Quedan letras por adivinar!"
+    lenLetrasRestantes = . - letrasRestantes
+
+    msjJuegoPerdido: .asciz "Que lastima, perdiste! :("
+    lenMsjJuegoPerdido = . - msjJuegoPerdido
+    
+    msjJuegoGanado: .asciz "Felicitaciones, ganaste!"
+    lenMsjJuegoGanado = . - msjJuegoGanado
+
+    msjPorFavorNoRepitasLetras: .asciz "Esa letra ya fue usada"
+    lenMsjPorFavorNoRepitasLetras = . - msjPorFavorNoRepitasLetras
+
+    solicitudNumero: .asciz "Por favor, ingresa un numero entre 1 y 20: "
+    lenSolicitudNumero = . - solicitudNumero
+
+    solicitudLetra: .asciz "Por favor, ingresa una letra minuscula o arriesga la palabra: "
+    lenSolicitudLetra = . - solicitudLetra
+
+    msjSoloNumeros: .asciz "Por favor, ingresa solo numeros."
+    lenMsjSoloNumeros = . - msjSoloNumeros
+
+    cadenaVidas: .asciz "vidas: 7"
+    lenCadenaVidas = . - cadenaVidas
+
+    msjResponder: .asciz "Respuesta: "
+    lenMsjResponder = . - msjResponder
+
+    msjCorrecto: .asciz "Correcto!"
+    lenMsjCorrecto = . - msjCorrecto
+
+    msjIncorrecto: .asciz "Incorrecto!"
+    lenMsjIncorrecto = . -msjIncorrecto
+
+    msjPedirX: .asciz "Ingrese la coordenada x para el disparo: "
+    lenMsjPedirX = . - msjPedirX
+    
+    msjPedirY: .asciz "Ingrese la coordenada y para el disparo: "
+    lenMsjPedirY = . - msjPedirY
+
+    ganado: .byte 0
+
+    repitioLetra: .byte 0
+
+    indicePrimeraLetraUsadaEnMapa: .word 213    // El primer espacio disponible en el mapa para escribir una letra usada
+
+    indicePalabraActual: .word 882  // Indice donde empezar a escribir la palabra actual acertada por el usuario -> "e _ e _ _ n _ e"
+
+    numeroPalabraElegida: .word 0
+
+    lemario: .asciz "-diciembre," //1
+             .asciz "hamburguesa," //2
+             .asciz "sentado," //3
+             .asciz "literatura," //4
+             .asciz "temporada," //5
+             .asciz "aspecto," //6
+             .asciz "bostezar," //7
+             .asciz "calzoncillos," //8
+             .asciz "ahumado," //9
+             .asciz "espectador," //10
+             .asciz "arreglarse," //11
+             .asciz "servilleta," //12
+             .asciz "cantantes," //13
+             .asciz "remolcador," //14
+             .asciz "futbolista," //15
+             .asciz "campamento," //16
+             .asciz "laboratorio," //17
+             .asciz "organillero," //18
+             .asciz "carnaval," //19
+             .asciz "plancha," //20
+
+    preg1: .asciz "Cuantos metros de altura tiene la gran piramide de Guiza?+" //1
+    lenPreg1=.-preg1
+    rta1: .word 138
+    maxRta1: .word 140
+    minRta1: .word 130
+
+    preg2: .asciz "Cuantos anios luz de distancia nos separan de la galaxia Andromeda, la mas cercana a la via lactea?+" //2
+    lenPreg2=.-preg2
+    rta2: .word 2000000
+    maxRta2: .word 2500000
+    minRta2: .word 1500000
+
+    preg3: .asciz "Cuantos segundos tarda la luz del sol en llegar a la tierra?+" //3
+    lenPreg3=.-preg3
+
+    preg4: .asciz "Cuantos billones de habitantes hay en la Tierra en 2022?+" //4
+    lenPreg4=.-preg4
+
+    preg5: .asciz "Cuantos millones de bitcoins pueden existir?+" //5
+    lenPreg5=.-preg5
+
+    preg6: .asciz "Cuando acabo la II Guerra Mundial?+" //6
+    lenPreg6=.-preg6
+
+    preg7: .asciz "En que anio llego Cristobal Colon a America?+" //7
+    lenPreg7=.-preg7
+
+    preg8: .asciz "Cuantas millones de copias vendio el disco Thriller, de Michael Jackson, el mas vendido de la historia?+" //8
+    lenPreg8=.-preg8
+
+    preg9: .asciz "Cuantos km2 mide Rusia, el pais mas grande del mundo?+" //9
+    lenPreg9=.-preg9
+
+    preg10: .asciz "De cuantos miles de millones de USD fue el PBI de Argentina al 2020?+" //10
+    lenPreg10=.-preg10
+
+    preguntaSeleccionada: .asciz "                                                                                                                        "
+    lenPreguntaSeleccionada = . - preguntaSeleccionada
+
+    vectorRespuestas: .word 138,2000000,489,8,21,1945,1492,65,17075200,383 
+    vectorMinimos:    .word 135,1500000,450,6,20,1944,1490,60,17000000,380
+    vectorMaximos:    .word 140,2500000,500,10,22,1946,1494,70,18000000,385
+
+
+
+    /* Posicion de la cuerda para el disparo*/
+	posCuerdaX: .word 0x17
+    posCuerdaY: .word 0x7
     
 
+    /* Para manejar la aleatoriedad */
+    seed: .word 1
+    const1: .word 1103515245
+    const2: .word 12345
+    numero: .word 0
 
-//----------------------------------------------------------
-.text             @ Defincion de codigo del programa
-//----------------------------------------------------------
+    time: .double
 
-//----------------------------------------------------------
-clearScreen:
-      .fnstart
-        push {r0, r1, r2, r7, lr}
-        mov r0, #1
-        ldr r1, =cls
-        ldr r2, =lencls
-        mov r7, #4
-        swi #0
-        pop {r0, r1, r2, r7, lr}
-        bx lr //salimos de la funcion mifuncion
-      .fnend
+    temp: .byte 0
 
-//----------------------------------------------------------
+/* DEFINICION DEL CODIGO DEL PROGRAMA */
+.text
 
-
-    // Retorna un numero ascii equivalente a las vidas restantes
-    // Entrada r0: el numero de vidas
-    // Salida r1: el equivalente en ascii de las vidas
-    asciiDeVidas:
+    /**
+    *   Devuelve la hora actual en milisegundos (epoch)
+    *   -------------------------------------------------
+    *   Salida r0: entero que representa los milisegundos
+    */
+    currentTimeInMilis:
         .fnstart
-      		push {r0, lr}
-      		ldr r1, =vida0
-      		ldrb r1, [r1]
-      		add r1, r0
-      		pop {r0, lr}
-      		bx lr
+            push {r7, lr}
+            ldr r0,=time    // donde se va a guardar la hora actual en milisegundos
+            mov r7, #78     // Opcion "pedir la hora" para paserla a SWI
+            swi 0           // SWI para pedir la hora
+            ldr r0,=time
+            ldr r0, [r0]    // r0 <- el resultado
+            pop {r7, lr}
         .fnend
 
-    // Retorna el input de un numero del usuario
-    escanearNum:
+    /**
+    *   Entrada r0: dividendo - un numero entero
+    *   Entrada r1: divisor - un numero entero
+    *   ----------------------------------------
+    *   Salida r0: cociente
+    *   Salida r1: resto
+    */
+    dividir:
         .fnstart
-            push {lr}
-            mov r7, #3 // Leer el input del usuario
-            mov r0, #0 // El primer parametro es el buffer
-            mov r2, #1 // El segundo parametro es el tamaño del buffer
-            ldr r1, =plantillaEscanear // Donde se guarda la direccion del input
-            swi 0
-            pop {lr}
-            bx lr
-        .fnend
+            push {r2, r3}
+            mov r2, r0  // resto: lo que va quedando del dividendo cuando resto
+            mov r3, #0  // cociente: el resultado de la division
+            
+            compara:
+                cmp r2, r1
+                bge resta
+                bal salir
 
-    
-    
-    // Entrada r0: el numero a convertir
-    // Salida r1: el valor en ascii
-    asciiANum:
-        /*.fnstart
-            push {lr}
-            ldr r1, =plantillaEscanear
-            ldrb r2, [r1]
-            sub r2, #48
-            pop {lr}
-            bx lr
-        .fnend
-        */
-
-    // Reemplaza el caracter de la posicion especificada por otro
-    // Entrada r1: dirección de memoria del vector
-    // Entrada r2: posicion del caracter a reemplazar
-    // Entrada r3: caracter nuevo
-    reemplazar:
-        .fnstart
-            push {r1, r2, r3, lr}   // Protegemos registros
-            add r1, r2              // Sumo la posición deseada a la dirección que apunta mi vector
-            strb r3, [r1]              // Cargamos lo que está en r3 en la dirección de r1
-            pop {r1, r2, r3, lr}    // Quitamos protección
-            bx lr                   // Volvemos
-        .fnend
-
-    // Entrada r1 -> dirección de memoria del mensaje en asciz
-    imprimirAsciz:
-        .fnstart
-            push {r0, r2, lr}
-            bl largoCadena
-            mov r2, r0
-            bl imprimir
-            pop {r0, r2, lr}
-            bx lr
-        .fnend
-
-    // Entrada r1 -> dirección de memoria
-    // Entrada r2 -> tamaño cadena
-    imprimir:
-        .fnstart
-            push {r0, r7, lr}
-            mov r7, #4  // La función de swi que necesitamos para imprimir
-            mov r0, #1
-            swi 0
-            pop {r0, r7, lr}
-            bx lr
-        .fnend
-
-    // Retorna el largo de la cadena
-    // Entradas r1: dirección de memoria
-    // Saida r0: longitud cadena
-    largoCadena:
-        .fnstart
-            push {r1, lr}
-            mov r3, #0 // Caracter nulo
-            mov r0, #0 // Contador
-
-            cicloLargo:
-                ldrb r2, [r1]
-                cmp r3, r2
-                beq finlargo
-                add r0, #1
-                add r1, #1
-                bal cicloLargo
-
-            finlargo:
-                pop {r1, lr}
+            resta:
+                sub r2, r2, r1  // resto -= divisor
+                add r3, #1      // cociente++
+                bal compara
+            
+            salir:
+                mov r0, r3      // r0 <- cociente (estaba en r3)
+                mov r1, r2      // r1 <- resto (estaba en r2)
+                pop {r2, r3}
                 bx lr
         .fnend
 
-    
-    // Se encarga de imprimir las vidas restantes
-    imprimirFeedback:
-        push {r0, r1, r2, r3, r6, lr}   // Protegemos los registros
-        mov r2, #7                  // El índice que queremos reemplazar
-        ldr r6, =vidas              // Direc de las vidas
-        ldr r0, [r6]                // El número de vidas a r0
-        bl asciiDeVidas             // En r1 ponemos el equivalente en ascii de r0
-        mov r3, r1                  // Copias el ascii en r3
-        ldr r1, =feedback           // Dirección de memoria de la cadena
-        bl reemplazar               // Reemplazamos con el valor actual de las vidas
-        bl largoCadena              // Obtenemos el largo de la cadena
-        mov r2, r0                  // Guardamos el largo en r2
-        bl imprimir                 // Imprime el mensaje de feedback
-        pop {r0, r1, r2, r3, r6, lr}    // Quitamos la protección de los registros
-        bx lr                       // Volvemos
-
-    // Actualiza el asciz que empieza en =letraElegida
-    // con la letra elegida por el usuario
-    escanearLetra:
+    /**
+    *   Aplica una serie de multiplicaciones, sumas y shift de bits al 
+    *   numero semilla para devolver un numero, en apariencia, aleatorio
+    *   ----------------------------------------------------------------
+    *   Entrada r0: numero semilla
+    *   ----------------------------------------------------------------
+    *   Salida r0: numero "aleatorio".
+    */
+    numeroAleatorio:
         .fnstart
-            push {r0, r1, r2, r7, lr}   // Protegemos los registros
-            ldr r1, =msjArriesgarLetra  // Mensaje al usuario
-            bl imprimirAsciz            // Imprime la solicitud al usuario
-            mov r7, #3                  // Función escanear input del usuario
-            mov r0, #0                  // EL búfer
-            mov r2, #1                  // Con cuánto me quedo del input
-            ldr r1, =letraElegida       // Donde se guarda el resultado
-            swi 0                       // SWI, Software interrupt
-            pop {r0, r1, r2, r7, lr}    // Quitamos la protección de los registros
-            bx lr                       // Volvemos
+            push {r1, r2, r3}
+            ldr r2, =const1
+            ldr r2, [r2]    // leo const1 en r2
+            mul r3, r0, r2  // r3= seed * 1103515245
+            ldr r0, =const2
+            ldr r0, [r0]    // leo const2 (12345) en r0
+            add r0, r0, r3  // r0 = r3 + 12345
+            /* Estas dos lineas devuelven "seed > >16 & 0x7fff ".
+            Con un pequenio truco evitamos el uso del AND */
+            LSL r0, # 1
+            LSR r0, # 17
+            pop {r1, r2, r3}
+            bx lr
         .fnend
 
-    // imprime cuadrante de matriz de palabra a adivinar
-	// Entrada r1 -> dirección de memoria
-	imprimirAciertos:
-		.fnstart
-            push {r1, r2, lr} // Protegemos los registros
-            ldr r1, =matrizAciertos
-            ldr r2, =longitudMatrizAciertos
+    /**
+    *   Imprime una cadena de caracteres ASCIZ 
+    *   utilizando interrupciones.
+    *   ------------------------------------------
+    *   Entrada r1: puntero a la cadena a imprimir
+    *   Entrada r2: longitud de la cadena
+    */
+    imprimir:
+        .fnstart
+            push {r0, r7}   // Protegemos los registros
+
+            mov r7, #4      // La funcion de swi que necesitamos para imprimir
+            mov r0, #1      // Indicamos a SWI que sera una cadena
+            swi 0           // SWI, Software interrupt
+
+            pop {r0, r7}    // Restauramos los registros
+            bx lr           // Salimos de la funcion
+        .fnend
+        
+    /**
+    *   Imprime una cadena de caracteres ASCIZ utilizando
+    *   interrupciones y luego imprime un salto de linea.
+    *   -------------------------------------------------
+    *   Entrada r1: puntero a la cadena a imprimir
+    *   Entrada r2: longitud de la cadena
+    */
+    imprimirLinea:
+        .fnstart
+            push {r1, r2, lr}
+            bl imprimir         // Imprimimos la cadena a la que apunta r1
+
+            ldr r1, =enter      // r1 <- puntero a enter: '\n'
+            mov r2, #1          // r2 <- 1 es lo que mide '\n'
+            bl imprimir         // Imprimimos el salto del linea
+
+            pop {r1, r2, lr}
+            bx lr
+        .fnend
+
+    /**
+    *   Limpia la pantalla de la consola.
+    */
+    clearScreen:
+        .fnstart
+            push {r1, r2, lr}
+            ldr r1, =cls
+            ldr r2, =lencls
             bl imprimir
             pop {r1, r2, lr}
             bx lr
-		.fnend
-    
-    // 
-    
-    //----------------------------------------------------------
-    imprimirString:
+        .fnend
+
+    /**
+    *   Imprime una cadena de caracteres ASCIZ 
+    *   despues de borrar el contenido de la pantalla.
+    *   ----------------------------------------------
+    *   Entrada r1: puntero a la cadena a imprimir
+    *   Entrada r2: longitud de la cadena
+    */
+    borrarEImprimir:
         .fnstart
-            //Parametros inputs:
-            //r1=puntero al string que queremos imprimir
-            //r2=longitud de lo que queremos imprimir
             push {lr}
-            push {r1}
-            push {r2} 
+
+            // Protegemos y restauramos registros mientras hacemos el clearScreen
+            push {r1, r2}
             bl clearScreen
-            pop {r2}
-            pop {r1}
-            mov r7, #4 // Salida por pantalla  
-            mov r0, #1      // Indicamos a SWI que sera una cadena           
-            swi 0    // SWI, Software interrup
+            pop {r1, r2}
+
+            bl imprimir
             pop {lr}
-            bx lr //salimos de la funcion mifuncion
+            bx lr
         .fnend
 
-
-    // ! ↓↓↓↓ DE ACA PARA ABAJO LO HICIMOS EL 04/06 ↓↓↓↓
-
-/******** INI MISMO LARGO CADENAS *******************************************************************/
     /**
-    *   Entrada r0: puntero cadena1
-    *   Entrada r1: puntero cadena2
-    *   -----------------------------------------
-    *   Salida r2: 1 (true) o 0 (false) si son iguales o no
+    *   Imprime el mapa por consola con todos los datos actualizados.
     */
-    mismoLargoCadenas:
-      .fnstart
-        push {r0, r1, lr}
-
-        push {r0, r1}
-        mov r1, r0      // temporalmente guardo direc cadena1 en r1
-        bl largoCadena  // r1 la direc, devuelve largo en r0
-        mov r2, r0      // r2 <-- largo cadena1 (que estaba en r0, ahí la dejó largoCadena)
-        pop {r0, r1}
-
-        push {r0}
-        bl largoCadena // r1 tiene la direccion memoria de cadena2 - r1 la direc, devuelve largo en r0
-        mov r3, r0     // r3 <-- largo cadena2 (que estaba en r0, ahí la dejó largoCadena)
-        pop {r0}
-
-        // r2: largo cadena1, r3: largo cadena2
-
-        cmp r2, r3
-
-        mov r2, #0
-        beq tieneMismoLargo
-        bal noTienenMismoLargo
-
-        tieneMismoLargo:
-          mov r2, #1
-          bal finMismoLargoCadena
-
-        noTienenMismoLargo:
-          mov r2, #0
-          bal finMismoLargoCadena
-
-        finMismoLargoCadena:
-          pop {r0, r1, lr}
-          bx lr
-      .fnend
-    
-    
-    
-    
-/******** FIN MISMO LARGO CADENAS *******************************************************************/
-
-
-/******** INI CADENAS SON IGUALES *******************************************************************/
-    /**
-    *   Entrada r0: puntero cadena1
-    *   Entrada r1: puntero cadena2
-    *   -----------------------------------------
-    *   Salida r2: 1 (true) o 0 (false) si son iguales o no
-    */
-    cadenasSonIguales:
+    imprimirMapa:
         .fnstart
-            push {r0, r1, r3, r4, r5, r6, lr}
-            mov r3, #0          // r3 <-- 0 Inicializamos el contador
-
-            push {r0, r1, lr}
-            bl largoCadena      // r0 <-- largo cadena (Entrada r1: dir mem cadena, Salida r0: su largo)
-            mov r6, r0          // r6 <-- r0 porque ahi esta el largo de la cadena
-            push {r0, r1, lr}
-
-            whileContMenorLargo:
-                cmp r3, r6          // Comparamos el contador con el largo
-                beq lasCadenasSonIguales
-
-                // Agarrar el valor actual de cadena1
-                ldr r4, [r0, r3]    // r4 es el caracater de cadena1 en el indice r3
-                ldr r5, [r1, r3]    // r5 es el caracater de cadena2 en el indice r3
-
-                cmp r4, r5          // Comparamos r4:cadena1[r3] con r5:cadena2[r3]
-                bne lasCadenasNoSonIguales // Tenemos que devolver false si no son iguales (BNE)
-
-                add r3, #1          // r3 <-- r3 + 1 (incrementar el contador)
-                bal whileContMenorLargo // Siguiente iteracion
-
-            lasCadenasNoSonIguales:
-                mov r2, #0
-                bal finCadenasSonIguales
-
-            lasCadenasSonIguales:
-                mov r2, #1
-                bal finCadenasSonIguales
-
-            finCadenasSonIguales:
-                pop {r0, r1, r3, r4, r5, r6, lr}    // Devolvemos los valores originales a los registros
-                bx lr
-            
+            push {r1, r2, lr}
+            ldr r1, =mapa
+            ldr r2, =lenMapa
+            bl borrarEImprimir  // Recibe en r1 puntero de cadena y en r2 la longitud de la misma
+            pop {r1, r2, lr}
+            bx lr
         .fnend
 
-/******** FIN CADENAS SON IGUALES *******************************************************************/
-    
-
-/******** INI QUITAR VIDAS **************************************************************************/
     /**
-    *   Entrada r1: cantidad de vidas a restar
+    *   Devuelve si quedan letras por adivinar (1, true) o no (0, false)
+    *   ---------------------------------------------------------------
+    *   Salida r2: 1 por true, 0 por false.
     */
-    quitarVidas:
-        @todo: vidas--
-        @todo - BRIAN
-/******** FIN QUITAR VIDAS **************************************************************************/
+    quedanLetrasPorAdivinar:
+        .fnstart
+            push {r0, r1, r3, lr}
 
+            ldr r0, =palabraActual
 
-/******** INI REEMPLAZAR LETRA EN MATRIZ ************************************************************/
+            mov r1, #0      // i: contador para ciclar
+
+            cicloQuedanLetrasPorAdivinar:
+                ldrb r3, [r0, r1]    // r3 <- palabraActual[i]
+
+                cmp r3, #00
+                beq noQuedanLetrasPorAdivinar // Si palabraActual[i] == nul terminamos de iterar la cadena
+
+                cmp r3, #0x20
+                beq noQuedanLetrasPorAdivinar   // Si palabraActual[i] ==  ' ' tambien terminamos de iterar la cadena
+
+                cmp r3, #'_'
+                beq siQuedanLetrasPorAdivinar   // Si palabraActual[i] ==  '_' tambien terminamos de iterar la cadena
+
+                add r1, #1  // i++
+                bal cicloQuedanLetrasPorAdivinar
+
+            siQuedanLetrasPorAdivinar:
+                mov r2, #1  // r2 <- 1 para retornar true
+                bal finQuedanLetrasPorAdivinar
+
+            noQuedanLetrasPorAdivinar:
+                mov r2, #0  // r2 <- 0 para retornar false          
+
+            finQuedanLetrasPorAdivinar:
+                pop {r0, r1, r3, lr}
+                bx lr
+        .fnend
+    
+    /**
+    *   Agrega al mapa la letra que ingreso el usuario en la siguiente 
+    *   posicion disponible para la lista en pantalla de letras usadas.
+    */
+    agregarLetraUsadaAlMapa:
+        .fnstart
+            push {r0, r1, r2, r3, r4}
+
+            ldr r0, =inputUsuario
+            ldr r1, =indicePrimeraLetraUsadaEnMapa
+            ldr r2, =mapa
+
+            ldrb r3, [r0]       // r3 <- la letra que ingreso el usuario
+            ldr r4, [r1]       // r4 <- indice: lugar disponible en mapa para agregar la letra (indicePrimeraLetraUsadaEnMapa)
+
+            strb r3, [r2, r4]   // mapa[indice] = letra
+
+            add r4, #2          // indice += 2
+            str r4, [r1]        // indicePrimeraLetraUsadaEnMapa = indice
+
+            pop {r0, r1, r2, r3, r4}
+            bx lr
+        .fnend
+    
+    /**
+    *   Intenta agregar la letra que ingreso el usuario a la lista de letras usadas.
+    *   ----------------------------------------------------------------------------
+    *   Salida r0: 1 (true) si se agrego a la lista, 0 (false) en caso contrario.
+    */
+    guardarLetraUsada:
+        .fnstart
+            push {r1, r3, r4, lr}
+
+            ldr r0, =inputUsuario
+            ldr r1, =letrasUsadas
+
+            ldrb r2, [r0]          // r2 <- letra: la letra que ingreso el usuario
+
+            mov r3, #0              // r3 <- i: indice/contador para ciclar
+
+            cicloGuardarLetraUsada:
+                ldrb r4, [r1, r3]    // r4 <- letrasUsadas[i]
+
+                cmp r4, r2
+                beq noAgregarLetraALista // Si letrasUsadas[i] == letra -> ya esta en la 'lista', podemos salir
+
+                cmp r4, #' '
+                beq agregarLetraALista  // Si letrasUsadas[i] == ' ' -> hay espacio disponible para agregar
+
+                add r3, #1                  // i++
+                bal cicloGuardarLetraUsada  // siguiente iteracion
+
+            noAgregarLetraALista:
+                // Encender flag repitioLetra
+                ldr r0, =repitioLetra
+                mov r1, #1
+                strb r1, [r0]
+
+                mov r0, #0  // r0 <- para retornar false
+                bal finGuardarLetraUsada
+
+            agregarLetraALista:
+                bl agregarLetraUsadaAlMapa
+                strb r2, [r1, r3]   // r2 (letra del usuario) -> letrasUsadas[r3]
+                mov r0, #1          // r0 <- para retornar true
+
+            finGuardarLetraUsada:
+                pop {r1, r3, r4, lr}
+                bx lr
+        .fnend
+    
+    /**
+    *   Imprime por consola el mensaje que indica
+    *   que quedan letras restantes por adivinar.
+    */
+    imprimirMsjLetrasRestantes:
+        .fnstart
+            push {r1, r2, lr}
+            ldr r1, =letrasRestantes
+            ldr r2, =lenLetrasRestantes
+            bl imprimirLinea
+            pop {r1, r2, lr}
+            bx lr
+        .fnend
+    
     /**
     *   Reemplaza el caracter de la matriz en los indices indicados, por el caracter indicado.
-    *   offset = puntero + (fila x cant_columnas x tamaño_bytes) + (columna x tamaño_bytes)
+    *   offset = puntero + (fila x cant_columnas x tamanio_bytes) + (columna x tamanio_bytes)
     *   --------------------------------------------------------------------------------------
     *   Entrada r0: puntero de la matriz
-    *   Entrada r1: puntero al ascii de reemplazo
+    *   Entrada r1: ascii de reemplazo (byte)
     *   Entrada r2: numero de fila
     *   Entrada r3: numero de columna
     *   Entrada r4: numero cantidad de columnas
     */
     reemplazarLetraEnMatriz:
         .fnstart
-            push {r0, r1, r2, r3, r4, r5, lr}
-            mul r5, r2, r4      // r5 <-- r2 x r4 : fila x cant_columnas
+            push {r0, r1, r2, r3, r4, r5}
+
+            mul r5, r2, r4      // r5 <-- r2 x r4 : fila * cantidad columnas
             add r5, r3          // r5 <-- r5 + r3 : r5 + numero de columna
-            ldrb r1, [r1]       // r1 <-- dato apuntado por r1 (caracter ascii)
-			strb r1, [r0, r5]   // Cargamos en direccion r0+r4 lo que esta en r1
-			pop {r0, r1, r2, r3, r4, r5, lr}
-			bx lr
+            strb r1, [r0, r5]   // matriz[fila][columna] = ascii de reemplazo
+
+            pop {r0, r1, r2, r3, r4, r5}
+            bx lr
         .fnend
-/******** FIN REEMPLAZAR LETRA EN MATRIZ ************************************************************/
-
-
-/******** INI REVELAR LETRA EN MAPA *****************************************************************/
+    
     /**
-    *   Revela la letra en el mapa.
+    *   Actualiza el mapa para representar el estado actual de la palabra actual,
+    *   es decir, las letras descubiertas y las ocultas representadas por '_'.
     */
-    revelarLetra:
+    actualizarPalabraActualEnMapa:
         .fnstart
-            //push {r0, r1, r2, r3, r4, r5, lr}
+            push {r0, r1, r2, r3, r4, r5, r6, lr}
 
             ldr r0, =mapa
-            ldr r1, =palabraSecreta
-            ldr r2, =inputUsuario
+            mov r2, #17     // numero de fila
+            mov r3, #8      // r3 <- numeroColumna: contador para ir incrementando los indices del mapa, inicia en 8.
+            mov r4, #53     // numero cantidad de columnas
 
-            mov r3, #0      // r3 <-- #0 : Contador en 0
+            ldr r5, =palabraActual
+            mov r6, #0      // r6 <- i (indice): contador para ciclar palabraActual
 
-            ldrb r4, [r2]   // r4 <-- dato apuntado por r2 (=inputUsuario)
+            cicloActualizarPalabraActualEnMapa:
+                ldrb r1, [r5, r6]   // r1 <- palabraActual[i]
 
-            bal cicloRevelarLetra   // Iniciamos el ciclo
+                cmp r1, #00
+                beq finActualizarPalabraActualEnMapa    // palabraActual[i] == nul -> no quedan caracteres para actualizar
 
-            cicloRevelarLetra:
-                ldrb r5, [r1, r3]   // r5 <-- el caracter de "palabraSecreta" al que apunta r1+r3
+                bl reemplazarLetraEnMatriz
 
-                cmp r5, #0          // Compara con caracter nulo
-                beq finCicloRevelarLetra    // Si es nulo termina de iterar, no hay mas letras en la "palabraSecreta"
+                add r3, #2      // numeroColumna += 2 (Incremento de a 2 para dejar un espacio entre las letras/guiones)
+                add r6, #1      // i++
+                bal cicloActualizarPalabraActualEnMapa // siguiente iteracion
 
-                add r3, #1  // Sino, incrementamos el contador
-                
-                cmp r4, r5          // Comparamos r4 (letra arriesgada) con r5 (caracter actual)
-                beq agregarLetraAlMapa  // Si son iguales, agregamos la letra en el mapa
-                bal cicloRevelarLetra   // Sino, pasamos a la siguiente iteracion.    
-            
-            agregarLetraAlMapa:
-                push {r0, r1, r2, r3, r4, lr}   // Guardamos los registros con sus valores actuales al momento, porque vamos a setear la comparacion
-                // r0 <-- puntero del mapa
-                // r3 <-- columna : ya se encuentra el contador
-                ldr r1, =inputUsuario   // r1 <-- puntero de lo ingresado por el usuario
-                mov r2, #16             // r2 <-- #16 : fila 16 es donde se escriben las letras develadas de la palabra
-                mov r4, #53             // r4 <-- #53 : cantidad de columnas
-                bl reemplazarLetraEnMatriz      // Reemplazamos
-                pop {r0, r1, r2, r3, r4, lr}    // Restauramos los valores de los registros guardados
-                bal cicloRevelarLetra
-
-            finCicloRevelarLetra:
-                pop {r0, r1, r2, r3, r4, r5, lr}
+            finActualizarPalabraActualEnMapa:
+                pop {r0, r1, r2, r3, r4, r5, r6, lr}
                 bx lr
         .fnend
-/******** FIN REVELAR LETRA EN MAPA *****************************************************************/
 
-
-/******** INI REVELAR PALABRA SECRETA ***************************************************************/
     /**
-    *   Actualiza la parte del mapa que muestra las letras reveladas de la palabra secreta.
+    *   Copia el contenido de la primera cadena en la segunda.
+    *   Precaucion: ambas cadenas deben tener el mismo espacio reservado 
+    *   en memoria para evitar pisar espacios por fuera de la cadena2.
+    *   ----------------------------------------------------------------
+    *   Entrada r0: puntero a cadena1, que tiene el contenido a copiar
+    *   Entrada r1: puntero a cadena2, que recibira el nuevo contenido
     */
-    revelarPalabraSecreta:
-        @todo - JUAN
-/******** FIN REVELAR PALABRA SECRETA ***************************************************************/
+    copiarCadenas:
+        .fnstart
+            push {r0, r1, r2, r3}
 
+            mov r2, #0  // r2 <- i (indice): contador para ciclar
 
-/******** INI ARRIESGAR PALABRA *********************************************************************/
+            cicloCopiarCadenas:
+                ldrb r3, [r0, r2]       // cadena1[i]
+
+                cmp r3, #00
+                beq finCopiarCadenas    // Si cadena1[i] == nul -> no quedan caracteres por copiar
+
+                strb r3, [r1, r2]       // cadena2[i] = cadena1[i]
+
+                add r2, #1              // i++
+                bal cicloCopiarCadenas  // siguiente iteracion
+
+            finCopiarCadenas:
+                pop {r0, r1, r2, r3}
+                bx lr
+        .fnend
+
     /**
-    *   Compara si la palabra arriesgada por el usuario es igual a la secreta.
-    *   Si no acertó:
-    *           - Ganado = false
-    *           - Vidas = 0
-    *           - Revela la palabra secreta
-    *   Si acertó:
-    *           - Ganado = true
-    *   ----------------------------------------------------------------------
-    *   Entrada r1: puntero al input del usuario
+    *   Copia el contenido de palabraOculta en palabraActual.
     */
-    arriesgarPalabra:
+    copiarPalabraOcultaEnActual:
+        .fnstart
+            push {r0, r1, lr}
+
+            ldr r0, =palabraOculta  // Entrada r0: palabra a copiar
+            ldr r1, =palabraActual  // Entrada r1: palabra que recibe contenido
+            bl copiarCadenas
+
+            pop {r0, r1, lr}
+            bx lr
+        .fnend
+
+    /**
+    *   Imprime por consola el mensaje que
+    *   indica que el usuario gano el juego.
+    */
+    imprimirMsjJuegoGanado:
+        .fnstart
+            bl copiarPalabraOcultaEnActual
+            bl actualizarPalabraActualEnMapa
+            bl imprimirMapa
+            ldr r1, =msjJuegoGanado
+            ldr r2, =lenMsjJuegoGanado
+            bl imprimirLinea
+            bal fin
+        .fnend
+    
+    /**
+    *   Copia el contenido del string backup en el string palabraActual
+    */
+    restaurarPalabraActual:
+        .fnstart
+            push {r0, r1, lr}
+            ldr r0, =backup
+            ldr r1, =palabraActual
+            bl copiarCadenas
+            bl actualizarPalabraActualEnMapa
+            pop {r0, r1, lr}
+            bx lr
+        .fnend
+
+    /**
+    *   Reemplaza los '_' por '@' de la palabraActual para
+    *   representar los caracteres que el usuario no pudo adivinar.
+    */
+    encriptarLetrasNoEncontradas:
+        .fnstart
+            push {r0, r1, r2, r9, lr}
+            
+            ldr r0, =palabraActual
+            ldr r3, =backup
+            mov r1, #0              // r1 <- i (indice): contador para ciclar palabraActual
+            mov r9, #'@'
+            
+            cicloEncriptarLetrasNoEncontradas:
+                ldrb r2, [r0, r1]    // r2 <- palabraActual[i]
+                
+                cmp r2, #00
+                beq finEncriptarLetrasNoEncontradas // Si palabraActual[i] == nul -> terminamos de ciclar la palabraActual
+                
+                strb r2, [r3, r1]                   // Guardamos en backup[i] = palabraActual[i]
+                
+                cmp r2, #'_'
+                bne sigCicloEncriptarNoEncontradas  // Si palabraActual[i] != '_' -> siguiente iteracion
+
+                strb r9, [r0, r1]                   // palabraActual[i] = '@'
+
+            sigCicloEncriptarNoEncontradas:
+                add r1, #1                              // i++
+                bal cicloEncriptarLetrasNoEncontradas   // siguiente iteracion
+            
+            finEncriptarLetrasNoEncontradas:
+                pop {r0, r1, r2, r9, lr}
+                bx lr
+        .fnend
+    
+    /**
+    *   Imprime por consola el mensaje que
+    *   indica que el usuario perdio el juego.
+    */
+    imprimirMsjJuegoPerdido:
+        .fnstart
+            push {r1, r2, lr}
+            bl encriptarLetrasNoEncontradas
+            bl actualizarPalabraActualEnMapa
+            bl imprimirMapa
+            ldr r1, =msjJuegoPerdido
+            ldr r2, =lenMsjJuegoPerdido
+            bl imprimirLinea
+            pop {r1, r2, lr}
+            bx lr
+        .fnend
+
+    /**
+    *  Convierte un numero decimal a su equivalente en ASCII
+    *  -----------------------------------------------------
+    *  Entrada r0: un numero decimal
+    *  -----------------------------------------------------
+    *  Salida r1: el numero en ASCII
+    */
+    unidadDecimalToAscii:
+        .fnstart
+            push {r0, lr}
+            add r1, r0, #0x30
+            pop {r0, lr}
+            bx lr
+        .fnend
+    
+    /**
+    *   Actualiza el mensaje que indica la cantidad de
+    *   vidas restantes con el valor actual de la misma.
+    */
+    actualizarMsjVidas:
+        .fnstart
+            push {r0, r1, r2, r3, lr}      
+
+            ldr r0, =vidas
+            ldrb r0, [r0]           // r0 <- vidas
+            bl unidadDecimalToAscii // r1 <- asciiDelNum <- unidadDecimalToAscii(r0: num decimal), 0 <= num <= 9
+
+            ldr r2, =cadenaVidas
+            mov r3, #7              // r3 <- i: 7 es la parte de cadenaVidas donde esta el numero de vidas restantes
+            strb r1, [r2, r3]       // cadenaVidas[7] = asciiDelNum
+            
+            pop {r0, r1, r2, r3, lr}
+            bx lr
+        .fnend
+    
+    /**
+    *   Reemplaza en la matriz del mapa el caracter indicado si las vidas 
+    *   restantes son menos que las necesarias para dibujar un espacio.
+    *   -----------------------------------------------------------------------
+    *   Entrada r0: vidas restantes
+    *   Entrada r1: vidas necesarias para dibujar un espacio
+    *   Entrada r2: caracter ASCII que representa la parte del cuerpo a dibujar
+    *   Entrada r3: numero de fila
+    *   Entrada r4: numero de columna
+    */
+    actualizarParteEnMapa:
+        .fnstart
+            push {r0, r1, r2, r3, r4, lr}
+
+            cmp r0, r1
+            blt usarCaracterEnParte // Si vidasRestantes != vidasNecesarias -> dibujamos el caracter ASCII
+
+            mov r1, #' '
+            bal finActualizarParteEnMapa
+
+            usarCaracterEnParte:
+                mov r1, r2      // r1: ascii de reemplazo (.byte)
+
+            finActualizarParteEnMapa:
+                ldr r0, =mapa   // r0: puntero de la matriz
+                mov r2, r3      // r2: numero de fila
+                mov r3, r4      // r3: numero de columna
+                mov r4, #53     // r4: numero cantidad de columnas
+                bl reemplazarLetraEnMatriz  // reemplazarLetraEnMatriz(r0, r1, r2, r3, r4)
+                pop {r0, r1, r2, r3, r4, lr}
+                bx lr
+       .fnend
+
+    /**
+    *   Actualiza en el mapa el caracter correspondiente 
+    *   en el lugar de la cabeza: si vidas >= 7, dibujar 'o'.
+    *   -----------------------------------------------------
+    *   Entrada r0: numero de vidas restantes
+    */
+    actualizarCabezaEnMapa:
+        .fnstart
+            push {r0, r1, r2, r3, r4, lr}
+            mov r1, #7      // r1 <- vidas necesarias para dibujar ' '
+            mov r2, #'o'    // r2 <- cabeza
+            mov r3, #8      // r3 <- numero de fila
+            mov r4, #23     // r4 <- numero de columna
+            bl actualizarParteEnMapa
+            pop {r0, r1, r2, r3, r4, lr}
+            bx lr
+       .fnend      
+
+    /**
+    *   Actualiza en el mapa el caracter correspondiente 
+    *   en el lugar del pecho: si vidas >= 6, dibujar '|'.
+    *   -----------------------------------------------------
+    *   Entrada r0: numero de vidas restantes
+    */
+    actualizarPechoEnMapa:
+        .fnstart
+            push {r0, r1, r2, r3, r4, lr}
+            mov r1, #6      // r1 <- vidas necesarias para dibujar ' '
+            mov r2, #'|'    // r2 <- pecho
+            mov r3, #9      // r3 <- numero de fila
+            mov r4, #23     // r4 <- numero de columna
+            bl actualizarParteEnMapa
+            pop {r0, r1, r2, r3, r4, lr}
+            bx lr
+       .fnend
+    
+    /**
+    *   Actualiza en el mapa el caracter correspondiente 
+    *   en el lugar del abdomen: si vidas >= 3, dibujar '|'.
+    *   -----------------------------------------------------
+    *   Entrada r0: numero de vidas restantes
+    */
+    actualizarAbdomenEnMapa:
+        .fnstart
+            push {r0, r1, r2, r3, r4, lr}
+            mov r1, #5      // r1 <- vidas necesarias para dibujar ' '
+            mov r2, #'|'    // r2 <- abdomen
+            mov r3, #10     // r3 <- numero de fila
+            mov r4, #23     // r4 <- numero de columna
+            bl actualizarParteEnMapa
+            pop {r0, r1, r2, r3, r4, lr}
+            bx lr
+       .fnend   
+
+    /**
+    *   Actualiza en el mapa el caracter correspondiente 
+    *   en el lugar de la pierna izquierda: si vidas >= 2, dibujar '/'.
+    *   -----------------------------------------------------
+    *   Entrada r0: numero de vidas
+    */
+    actualizarPiernaIzqEnMapa:
+        .fnstart
+            push {r0, r1, r2, r3, r4, lr}
+            mov r1, #4      // r1 <- vidas necesarias para dibujar ' '
+            mov r2, #'/'    // r2 <- pierna izquierda
+            mov r3, #11     // r3 <- numero de fila
+            mov r4, #22     // r4 <- numero de columna
+            bl actualizarParteEnMapa
+            pop {r0, r1, r2, r3, r4, lr}
+            bx lr
+       .fnend
+
+    /**
+    *   Actualiza en el mapa el caracter correspondiente 
+    *   en el lugar de la pierna derecha: si vidas >= 1, dibujar '\\'.
+    *   -----------------------------------------------------
+    *   Entrada r0: numero de vidas
+    */
+    actualizarPiernaDerEnMapa:
+        .fnstart
+            push {r0, r1, r2, r3, r4, lr}
+            mov r1, #3      // r1 <- vidas necesarias para dibujar ' '
+            mov r2, #'\\'   // r2 <- pierna derecha
+            mov r3, #11     // r3 <- numero de fila
+            mov r4, #24     // r4 <- numero de columna
+            bl actualizarParteEnMapa
+            pop {r0, r1, r2, r3, r4, lr}
+            bx lr
+       .fnend
+    
+    /**
+    *   Actualiza en el mapa el caracter correspondiente 
+    *   en el lugar del brazo izquierdo: si vidas >= 5, dibujar '/'.
+    *   -----------------------------------------------------
+    *   Entrada r0: numero de vidas restantes
+    */
+    actualizarBrazoIzqEnMapa:
+        .fnstart
+            push {r0, r1, r2, r3, r4, lr}
+            mov r1, #2      // r1 <- vidas necesarias para dibujar ' '
+            mov r2, #'/'    // r2 <- brazo izquierdo
+            mov r3, #9      // r3 <- numero de fila
+            mov r4, #22     // r4 <- numero de columna
+            bl actualizarParteEnMapa
+            pop {r0, r1, r2, r3, r4, lr}
+            bx lr
+       .fnend
+
+    /**/
+    
+    /**
+    *   Actualiza en el mapa el caracter correspondiente 
+    *   en el lugar del brazo derecho: si vidas >= 4, dibujar '\\'.
+    *   -----------------------------------------------------
+    *   Entrada r0: numero de vidas restantes
+    */
+    actualizarBrazoDerEnMapa:
+        .fnstart
+            push {r0, r1, r2, r3, r4, lr}
+            mov r1, #1      // r1 <- vidas necesarias para dibujar ' '
+            mov r2, #'\\'   // r2 <- brazo derecho
+            mov r3, #9      // r3 <- numero de fila
+            mov r4, #24     // r4 <- numero de columna
+            bl actualizarParteEnMapa
+            pop {r0, r1, r2, r3, r4, lr}
+            bx lr
+        .fnend   
+
+    /**
+    *   Actualiza la persona en el mapa, dibujando las partes
+    *   correspondientes segun el numero de vidas restantes.
+    */
+    actualizarPersonaEnMapa:
+        .fnstart
+            push {r0, r1, lr}
+
+            ldr r1, =vidas
+            ldrb r0, [r1]   // r0 <- vidas restantes
+
+            /* Todas estas subrutinas reciben las vidas en r0 */
+            bl actualizarCabezaEnMapa
+            bl actualizarPechoEnMapa
+            bl actualizarAbdomenEnMapa
+            bl actualizarPiernaIzqEnMapa
+            bl actualizarPiernaDerEnMapa
+            bl actualizarBrazoIzqEnMapa
+            bl actualizarBrazoDerEnMapa
+
+            pop {r0, r1, lr}
+            bx lr
+        .fnend
+
+    /**
+    *   Imprime el estado del juego por consola.
+    */
+    informarEstado:
         .fnstart
             push {r0, r1, r2, lr}
-            
-            ldr r0, =palabraSecreta     // r0 <-- direccion memoria de =palabraSecreta
-            bl cadenasSonIguales        // r2 <-- true/false si las cadenas son iguales
 
-            cmp r2, #0                  // Compara r2 con 0
-            beq noAcertoPalabra         // Si es 0, no acerto
-            bal acertoPalabra           // Sino, acerto
+            bl quedanLetrasPorAdivinar  // r2 <- si quedan letras o no (true o false)
+            cmp r2, #0
+            beq juegoGanado             // Si r2 == false -> no quedan letras por adivinar -> usuario gano
 
-            // Si acertó
-            acertoPalabra:
-                // Gano juego, setear los estados
-                // Poner en =ganado un 1
-                ldr r1, =ganado         // r1 <-- direccion memoria de =ganado
-                mov r2, #1              // r2 <-- 1 (true)
-                strb r2, [r1]           // guarda en r1 el valor de r2
-                bal finAcertoPalabra    // Saltamos al final del procedimiento
+            ldr r0, =vidas
+            ldrb r1, [r0]       // r1 <- vidas restantes
+            cmp r1, #0
+            ble juegoPerdido    // Si vidasRestantes <= 0 -> sin vidas -> usuario perdio
 
+            bl actualizarMsjVidas   // Actualiza la cadena que luego se imprime para mostrar las vidas
+            ldr r1, =cadenaVidas
+            ldr r2, =lenCadenaVidas
+            bl imprimirLinea        // Imprimir las vidas restantes
 
-            // Si no acertó
-            noAcertoPalabra:
-                ldr r1, =ganado         // r1 <-- direccion memoria de =ganado
-                mov r2, #0              // r2 <-- 0 (false)
-                strb r2, [r1]           // guarda en r1 el valor de r2
+            ldr r0, =repitioLetra
+            ldrb r1, [r0]           // r1 <- repitioLetra (true/false)
+            cmp r1, #0
+            beq finInformarEstado       // Si !repitioLetra -> podemos salir
+            bal informarRepitioLetra    // Si repitioLetra -> informar que se repitio y despues salir
+
+            juegoGanado:
+                // Seteamos run = False para que el juego no se ejecute nuevamente.
+                ldr r0, =run
+                mov r1, #0      // r1 <- False
+                strb r1, [r0]   // run = False
+                bl imprimirMsjJuegoGanado
+                bal finInformarEstado
+
+            juegoPerdido:
                 
-                /* FUNCION DE DISPARAR PARA GANAR */
-                bl dispararParaGanar
+                bl imprimirMsjJuegoPerdido
+                bal finInformarEstado
 
-                bal finAcertoPalabra    // Saltamos al final del procedimiento
+            informarRepitioLetra:
+                ldr r1, =msjPorFavorNoRepitasLetras
+                ldr r2, =lenMsjPorFavorNoRepitasLetras
+                bl imprimirLinea
 
-            finAcertoPalabra:
-                bl revelarPalabraSecreta    // revela la palabra secreta actualizando matrizAciertos
-                mov r1, #7                  // r1 <-- vidas a restar
-                bl quitarVidas              // Resta las vidas
+                // Apagamos el flag de repitioLetra
+                ldr r0, =repitioLetra
+                mov r1, #0
+                strb r1, [r0]
+
+            finInformarEstado:
                 pop {r0, r1, r2, lr}
-                bal finJugar
-        .fnend
-/******** FIN ARRIESGAR PALABRA *********************************************************************/
-
-
-/******** INI CADENA CONTIENE LETRA *****************************************************************/
+                bx lr
+      .fnend
+    
     /**
-    *   True/false si la letra especificada está presente en la cadena.
+    *   Coloca espacios en la etiqueta =inputUsuario
+    */
+    limpiarInputPrevio:
+        .fnstart
+            push {r0, r1, r2, r7, lr}
+            ldr r0, =inputUsuario
+            mov r1, #0              // r1 <- i: indice para ciclar inputUsuario
+            mov r12, #' '
+            cicloLimpiarInputPrevio:
+                ldrb r2, [r0, r1]   // r2 <- inputUsuario[i]
+
+                cmp r2, #00
+                beq finLimpiarInputUsuario
+
+                strb r12, [r0, r1]  // inputUsuario[i] = ' '
+                
+                add r1, #1          // i++
+                bal cicloLimpiarInputPrevio
+
+                
+            finLimpiarInputUsuario:
+                pop {r0, r1, r2, r7, lr}
+                bx lr
+        .fnend
+
+    /**
+    *   Actualiza el string al que apunta =inputUsuario 
+    *   con lo que el usuario haya ingresado por consola.
+    */
+    leerDatos:
+        .fnstart
+            push {r0, r1, r2, r7, lr}
+            bl limpiarInputPrevio
+            mov r7, #3                  // Funcion escanear input del usuario
+            mov r0, #0                  // El bufer
+            ldr r2, =lenInputUsuario    // Longitud de la cadena del input
+            ldr r1, =inputUsuario       // Donde se guarda el resultado
+            swi 0
+            pop {r0, r1, r2, r7, lr}
+            bx lr
+        .fnend
+    
+    /**
+    *   True/false si la letra especificada esta presente en la cadena.
     *   ---------------------------------------------------------------
     *   Entrada r0: direccion memoria de la cadena
     *   Entrada r1: direccion memoria de la letra
@@ -520,304 +946,919 @@ clearScreen:
     */
     cadenaContieneLetra:
         .fnstart
-            push {r0, r1, r3, r4, lr}   // Protegemos los registros que vamos a usar
-            mov r2, #0                  // Inicializamos contador en 0
-            ldrb r1, [r1]               // r1 <-- la letra: primer byte de lo que apunta el puntero que estaba en r1
-            bal cicloCadenaContieneLetra
+            push {r0, r1, r3, r4}
+            mov r2, #0      // r2 <- contador para ciclar incia en 0
+            ldrb r1, [r1]   // r1 <- la letra que ingreso el usuario: inputUsuario[0]
+            
             cicloCadenaContieneLetra: 
-                ldrb r3, [r0, r2]               // r3 <-- letra actual de la cadena - Byte que que apunta el puntero r0 + r2 (contador)
-                cmp r3, #0                      // r3 es el caracter nulo?
-                beq letraNoEstaEnCadena         // Si lo es, la letra no esta en la cadena
-                cmp r3, r1                      // r3 es igual que la letra que esta en r1?
-                beq letraSiEstaEnCadena         // Si lo es, la letra esta en la cadena
-                add r2, #1                      // Si no lo es, incrementamos el contador
-                bal cicloCadenaContieneLetra    // Volvemos a iterar
+                ldrb r3, [r0, r2]               // r3 <- cadena[i]
 
-            letraNoEstaEnCadena:
-                mov r2, #0                  // r2 <-- 0 (false)
-                bal finCadenaContieneLetra  // Salimos del procedimiento 
+                cmp r3, #0
+                beq letraNoEstaEnCadena         // Si cadena[i] == nul -> la letra NO esta en la cadena
+
+                cmp r3, r1                      // r3 es igual que la letra que esta en r1?
+                beq letraSiEstaEnCadena         // Si cadena[i] == letra -> la letra esta en la cadena
+
+                add r2, #1                      // i++
+                bal cicloCadenaContieneLetra    // siguiente iteracion
 
             letraSiEstaEnCadena:
-                mov r2, #1                  // r2 <-- 1 (true)
-                bal finCadenaContieneLetra  // Salimos del procedimiento 
-                
+                mov r2, #1  // r2 <-- 1 para retornar true
+                bal finCadenaContieneLetra
+
+            letraNoEstaEnCadena:
+                mov r2, #0  // r2 <-- 0 para retornar false
+             
             finCadenaContieneLetra:
-                pop {r0, r1, r3, r4, lr}
+                pop {r0, r1, r3, r4}
                 bx lr
         .fnend
-/******** FIN CADENA CONTIENE LETRA *****************************************************************/
-
-
-/******** INI AGREGAR ACIERTO AL MAPA ***************************************************************/
+    
     /**
-    *   Agrega la letra acertada al mapa.
-    *   ---------------------------------
-    *   Entrada r0: puntero al string con la letra
+    *   Reemplazar la letra ingresada por el usuario en la 
+    *   palabra actual a mostrar, las veces que sea necesario.
     */
-    agregarAciertoAlMapa:
-        @todo - JUAN
-/******** FIN AGREGAR ACIERTO AL MAPA ***************************************************************/
-
-
-/******** INI AGREGAR LETRAS USADA ******************************************************************/
-    /**
-    *   Agrega la letra usada al string de letras usadas
-    *   ------------------------------------------------
-    *   Entrada r0: puntero al string con las letras usadas
-    *   Entrada r1: puntero al string con la letra para agregar
-    */
-    agregarLetraUsada:
-        @todo - JUAN
-/******** FIN AGREGAR LETRAS USADA ******************************************************************/
-
-
-/******** INI ARRIESGAR LETRA ***********************************************************************/
-    /**
-    *   Procesa la funcionalidad del usuario arriesgando una letra.
-    *   -----------------------------------------------------------
-    *   Entrada r1: puntero al string del input del usuario
-    */
-    arriesgarLetra:
+    agregarLetraAPalabraActual:
         .fnstart
-            push {r0, r1, r2, lr}
+            push {r0, r1, r2, r3, r4, r5}
 
-            /* CONSULTAR */
-            // Si la letra ya se uso:
-            // 1) Le decimos que ya se uso
-            // 2) finArriesgarLetra para avanzar a la siguiente iteracion
-            /* CONSULTAR */
-            
-            bl agregarLetraUsada    // Agregar la letra a las letras usadas
+            ldr r0, =palabraOculta
+            ldr r1, =inputUsuario
 
-            ldr r0, =palabraSecreta     // Poner en r0 la direc palabra secreta
-            bl cadenaContieneLetra      // r2 <-- true/false si la letra esta en la palabra secreta
+            ldr r2, =palabraActual
 
-            cmp r2, #0                  // Comparamos r2 con 0
-            beq noAcertoLetra
-            bal siAcertoLetra
-            
+            ldrb r3, [r1]   // r3 <- letra
 
-            // Si acerto
-            siAcertoLetra:
-                // Actualizar el mapa
-                mov r0, r1                  // r0 <-- r1: esta puntero del input usuario (param del procedimiento)
-                bl agregarAciertoAlMapa     // Se agrega al mapa
-                bal finArriesgarLetra
-            
-            // Si no acertó
-            noAcertoLetra:
-                // Bajar una vida
-                mov r1, #1              // La cantidad de vidas a restar
-                bl quitarVidas          // Resta la cantidad de vidas que haya en r1
-                // Si no quedan vidas: pregunta aproximativa
-                // Codigo para chequear si quedan vidas
-                bl preguntaAproximativa
-                // Si acierta la respuesta -> vidas += 1
+            mov r4, #0      // r4 <- i: contador para iterar, empieza en 0
 
+            cicloAgregarLetraAPalabra:
+                ldrb r5, [r0, r4]    // r5 <- palabraOculta[i]
 
-                // Codigo para chequear si quedan vidas
-                // Si quedan 0 vidas
-                bl dispararParaGanar
+                cmp r5, #00
+                beq finAgregarLetraAPalabraActual   // Si palabraOculta[i] == nul -> terminamos de iterar palabraActual
 
-                bal finArriesgarLetra
+                cmp r5, r3
+                bne sigCicloAgregarLetraAPalabra    // Si palabraOculta[i] != letra -> siguiente iteracion
 
-            finArriesgarLetra:
-                pop {r0, r1, r2, lr}
-                bal finJugar
+                strb r3, [r2, r4]                   // else -> palabraActual[indice] = letra
+             
+            sigCicloAgregarLetraAPalabra:
+                add r4, #1  // i++
+                bal cicloAgregarLetraAPalabra
+
+            finAgregarLetraAPalabraActual:
+                pop {r0, r1, r2, r3, r4, r5}
+                bx lr
         .fnend
-/******** FIN AGREGAR LETRAS USADA ******************************************************************/
 
-
-/******** INI LEER DATOS ****************************************************************************/
     /**
-    *   Actualiza el string al que apunta =inputUsuario con lo que el usuario haya ingresado por consola.
+    *   Resta una vida al contador de vidas restantes en =vidas.
     */
-    leerDatos:
+    quitarVida:
         .fnstart
-            push {r0, r1, r2, r7, lr}
-            mov r7, #3                    // Función escanear input del usuario
-            mov r0, #0                    // EL búfer
-            mov r2, #40                   // Con cuánto me quedo del input
-            ldr r1, =inputUsuario         // Donde se guarda el resultado
-            swi 0
-            pop {r0, r1, r2, r7, lr}
-            // Verificar si el sistema guarda un nul al final del input del usuario (max 40)
-            // SI NO ES ASI -> reemplazar el primer espacio con un nul
+            push {r0, r1, r2}
+
+            ldr r0, =vidas
+            ldrb r1, [r0]   // r1 <- vidas
+            sub r2, r1, #1  // r2 = vidas - 1
+            strb r2, [r0]   // vidas = r2
+
+            pop {r0, r1, r2}
             bx lr
         .fnend
-/******** FIN LEER DATOS ****************************************************************************/
 
-
-/******** INI PROCESAR DATOS ************************************************************************/
     /**
-    *   Determina si la letra elegida pertenece a la palabra oculta y si es así actualizar el mapa a imprimir.
+    *   Devuelve 1 (true) o 0 (false) si lo que ingreso
+    *   el usuario es la palabra oculta.
+    *   -----------------------------------------------
+    *   Salida r0: 1 (true) o 0 (false)
+    */
+    usuarioAcertoPalabra:
+        .fnstart
+            push {r1, r2, r3, r4}
+
+            ldr r0, =palabraOculta
+            ldr r1, =inputUsuario
+
+            mov r2, #0              // r2 <- i (contador para iterar)
+
+            cicloUsuarioAcertoPalabra:
+                ldrb r3, [r0, r2]    // r3 <- palabraOculta[i]
+
+                cmp r3, #00
+                beq siUsuarioAcertoPalabra  // Si palabraOculta[i] == nul -> iteramos hasta el final y no hubo diferencias, acerto
+
+                cmp r3, #' '
+                beq siUsuarioAcertoPalabra  // Si palabraOculta[i] == ' ' -> iteramos hasta el final y no hubo diferencias, acerto
+
+                ldrb r4, [r1, r2]    // r4 <- inputUsuario[i]
+
+                cmp r3, r4
+                bne noUsuarioAcertoPalabra  // Si palabraOculta[i] != inputUsuario[i] -> no acerto
+
+                add r2, #1  // i++
+                bal cicloUsuarioAcertoPalabra
+
+            siUsuarioAcertoPalabra:
+                mov r0, #1
+                pop {r1, r2, r3, r4}
+                bx lr
+
+            noUsuarioAcertoPalabra:
+                mov r0, #0
+                pop {r1, r2, r3, r4}
+                bx lr
+        .fnend
+  
+    /**
+    *   Determina que tipo de dato ingreso el usuario (letra o palabra)
+    *   y altera los estados del juego en funcion de si el dato ingresado
+    *   es correcto o no.
     */
     procesarDatos:
         .fnstart
-            push {lr}
-            
-            ldr r1, =inputUsuario   // r1 <-- puntero del input del usuario
-            bl largoCadena          // r0 <-- largo cadena del string al que apunta =inputUsuario
-            cmp r0, #1              // Comparamos r0 (largo) con #1
-            blt finProcesarDatos    // Si el input es menor a 1 (cadena vacia), vamos a la siguiente iteracion (para el usuario no paso nada)
-            bgt arriesgarPalabra    // Si es mayor que 1, intento arriesgar palabra
-            bal arriesgarLetra      // Si es 1, intento arriesgar una letra
+            push {r0, r1, r2, lr}
+
+            ldr r0, =inputUsuario
+
+            ldrb r1, [r0, #1]           // r1 <- inputUsuario[1]
+            cmp r1, #'\n'
+            beq usuarioArriesgoLetra    // Si inputUsuario[1] == '\n' -> El usuario ingreso una letra
+
+            usuarioArriesgoPalabra:
+                bl usuarioAcertoPalabra // r0 <- 1 o 0 (true/false) si acerto la palabra
+                cmp r0, #1
+                bne palabraIncorrecta           // Si no acerto
+                bl copiarPalabraOcultaEnActual  // Hacemos que no queden letras por adivinar.
+                bal finProcesarDatos
+
+            palabraIncorrecta:
+                // Quitar vidas
+                ldr r1, =vidas
+                
+                push {r0}
+                mov r0, #0
+                strb r0, [r1]   // vidas = 0
+                pop {r0}
+                
+                // Volver
+                bal finProcesarDatos
+
+            usuarioArriesgoLetra:
+                ldr r0, =palabraActual
+                ldr r1, =inputUsuario
+                bl cadenaContieneLetra      // r2 <- cadenaContieneLetra(r0:palabraActual, r1:letra): true/false
+                cmp r2, #1
+                beq encenderFlagRepitioLetra        // Si la letra ya estaba adivinada -> salimos
+
+                ldr r0, =palabraOculta
+                ldr r1, =inputUsuario
+                bl cadenaContieneLetra      // r2 <- cadenaContieneLetra(r0:cadena, r1:letra): true/false
+                cmp r2, #1
+                bne usuarioNoAcertoLetra    // Si no acerto la letra no la agregamos a la palabra actual
+
+                // Verificamos si la letra ya estaba adivinada
+                bl agregarLetraAPalabraActual
+                bal finProcesarDatos
+
+            encenderFlagRepitioLetra:
+                // Encender flag repitioLetra
+                ldr r0, =repitioLetra
+                mov r1, #1
+                strb r1, [r0]
+                bal finProcesarDatos
+
+            usuarioNoAcertoLetra:
+                bl guardarLetraUsada    // r0 <- si la pudo agregar o no (porque ya estaba presente)
+                cmp r0, #0
+                beq finProcesarDatos    // Si !laPudoAgregar -> ya estaba la letra, salimos de la subrutina
+                bl quitarVida           // restar una vida porque no acerto la letra
 
             finProcesarDatos:
+                pop {r0, r1, r2, lr}
+                bx lr
+        .fnend
+
+    /**
+    *   Imprime por consola la solictud al usuario de ingresar
+    *   una letra minuscula o la palabra si desea adivinar, 
+    *   lee lo ingresado y vuelve a solicitar si lo que ingreso
+    *   no es valido.
+    */
+    pedirLetra:
+        .fnstart
+            push {r0, r1, r2, lr}
+
+            cicloPedirLetra:
+            
+                /* Imprimir mensaje de solicitud */
+                ldr r1, =solicitudLetra
+                ldr r2, =lenSolicitudLetra
+                bl imprimir                    // imprimir(r1: cadena, r2: largo cadena)
+                
+                /* Registrar el input del usuario */
+                bl leerDatos        // Registramos el input del usuario    
+                
+                ldr r0, =inputUsuario
+                ldrb r1, [r0]           // inputUsuario[0]
+                
+                cmp r1, #'a'
+                blt cicloPedirLetra     // Si inputUsuario[0] < 'a' -> volver a pedir
+                
+                cmp r1, #'z'
+                bgt cicloPedirLetra     // Si inputUsuario[0] < 'z' -> volver a pedir
+                
+            finCicloPedirLetra:
+                pop {r0, r1, r2, lr}
+                bx lr
+        .fnend
+    
+    /**
+    *   Entrada r0: numero de pregunta
+    */
+    cargarPreguntaPorNumero:
+        .fnstart
+            push {r0, r1, r2, r3, r4}
+            ldr r1, =preguntaSeleccionada
+            mov r2, #0      // i: indice para ciclar cadena
+
+            cmp r0, #0
+            beq pregunta1
+
+            cmp r0, #1
+            beq pregunta2
+
+            cmp r0, #2
+            beq pregunta3
+
+            cmp r0, #3
+            beq pregunta4
+
+            cmp r0, #4
+            beq pregunta5
+
+            cmp r0, #5
+            beq pregunta6
+
+            cmp r0, #6
+            beq pregunta7
+
+            cmp r0, #7
+            beq pregunta8
+
+            cmp r0, #8
+            beq pregunta9
+
+            cmp r0, #9
+            beq pregunta10
+            
+            pregunta1:
+                ldr r3, =preg1
+                bal cicloCargarPreguntaPorNum
+            pregunta2:
+                ldr r3, =preg2
+                bal cicloCargarPreguntaPorNum
+            pregunta3:
+                ldr r3, =preg3
+                bal cicloCargarPreguntaPorNum
+            pregunta4:
+                ldr r3, =preg4
+                bal cicloCargarPreguntaPorNum
+            pregunta5:
+                ldr r3, =preg5
+                bal cicloCargarPreguntaPorNum
+            pregunta6:
+                ldr r3, =preg6
+                bal cicloCargarPreguntaPorNum
+            pregunta7:
+                ldr r3, =preg7
+                bal cicloCargarPreguntaPorNum
+            pregunta8:
+                ldr r3, =preg8
+                bal cicloCargarPreguntaPorNum
+            pregunta9:
+                ldr r3, =preg9
+                bal cicloCargarPreguntaPorNum
+            pregunta10:
+                ldr r3, =preg10
+                bal cicloCargarPreguntaPorNum
+
+            cicloCargarPreguntaPorNum:
+                ldrb r4, [r3, r2]       // pregx[i]
+
+                cmp r4, #00
+                beq finCargarPreguntaPorNumero  // Si pregx[i] es nul, salir
+                cmp r4, #'?'
+                beq finCargarPreguntaPorNumero  // Si pregx[i] es '+', salir
+                
+                strb r4, [r1, r2]       // preguntaSeleccionada = pregx[i]
+
+                add r2, #1              // i++
+                bal cicloCargarPreguntaPorNum
+
+            finCargarPreguntaPorNumero:
+                add r2, #1
+                mov r4, #00
+                strb r4, [r1, r2]       // preguntaSeleccionada = nul
+                pop {r0, r1, r2, r3, r4}
+                bx lr
+        .fnend
+
+    /**
+    *   Entrada r1: numero de pregunta.
+    *   -------------------------------
+    *   Salida r0: respuesta correcta
+    *   Salida r1: minimo de respuesta
+    *   Salida r2: maximo de respuesta
+    */
+    obtenerDatosPregunta:
+        .fnstart
+            push {r3, r4}
+            mov r4, #4
+            mul r3, r1, r4                  // numero de pregunta * 4
+
+            ldr r0, =vectorRespuestas
+            ldr r0, [r0, r3]
+            
+            ldr r1, =vectorMinimos
+            ldr r1, [r1, r3]               // minRtaSeleccionada = vectorMinimos[i]
+
+            ldr r2, =vectorMaximos
+            ldr r2, [r2, r3]               // maxRtaSeleccionada = vectorMaximos[i]		
+            pop {r3, r4}
+            bx lr
+        .fnend
+
+    /**
+    *   Ejecuta la funcionalidad de la pregunta aproximativa que suma vidas.
+    */
+    preguntaAproximativa:
+        .fnstart
+            push {r0, r1, r2, r3, r4, lr}
+
+            mov r1, #9
+            bl elegirNumeroRandom   // r1 <- random entre [0, 9]
+            mov r0, r1
+            bl cargarPreguntaPorNumero
+            bl obtenerDatosPregunta // r0: rta correcta, r1: min, r2: max
+            push {r0, r1, r2}
+            
+            cicloPreguntaAproximativa:
+                ldr r1, =preguntaSeleccionada
+                ldr r2, =lenPreguntaSeleccionada
+                bl imprimirLinea    // imprimir(r1: puntero cadena, r2: len cadena)
+                
+                ldr r1, =msjResponder
+                ldr r2, =lenMsjResponder
+                bl imprimir
+
+                bl leerDatos
+
+                ldr r0, =inputUsuario                
+                bl sonDigitosOEspacios  // r1 <- true/false si son todos digitos o espacios
+                
+                cmp r1, #0
+                beq cicloPreguntaAproximativa
+                
+                ldr r0, =inputUsuario
+                bl asciiADecim						// en r1 queda el valor decimal
+
+                mov r3, r1
+                
+                pop {r0, r1, r2}    // r0: rta correcta, r1: min, r2: max
+                
+                cmp r3, r0
+                beq aumentarDoble
+                
+                cmp r3, r1
+                blt incorrecto
+                
+                cmp r1, r2
+                bgt finPreguntaAproximativa
+                
+                bal aumentarSimple
+                
+                incorrecto:
+                    ldr r1, =msjIncorrecto
+                    ldr r2, =lenMsjIncorrecto
+                    bl imprimirLinea
+                    bal finPreguntaAproximativa
+
+                aumentarDoble:
+                    bl restaurarPalabraActual
+                    ldr r1, =msjCorrecto
+                    ldr r2, =lenMsjCorrecto
+                    bl imprimirLinea
+
+                    ldr r3, =vidas
+                    mov r4, #2
+                    str r4, [r3]
+                    
+                    bal finPreguntaAproximativa
+                    
+                aumentarSimple:
+                    bl restaurarPalabraActual
+                    ldr r3, =vidas
+                    mov r4, #1
+                    str r4, [r3]
+                
+                finPreguntaAproximativa:
+                    pop {r0, r1, r2, r3, r4, lr}
+                    bx lr
+        .fnend
+
+    /**
+    *   Imprime un mensaje solicitando que se ingrese la coordenada X del disparo.
+    */
+    imprimirPedidoX:
+        .fnstart
+            push {r1, r2, lr}
+            ldr r1, =msjPedirX
+            ldr r2, =lenMsjPedirX
+            bl imprimir
+            pop {r1, r2, lr}
+            bx lr
+        .fnend
+
+    /**
+    *   Imprime un mensaje solicitando que se ingrese la coordenada Y del disparo.
+    */
+    imprimirPedidoY:
+        .fnstart
+            push {r1, r2, lr}
+            ldr r1, =msjPedirY
+            ldr r2, =lenMsjPedirY
+            bl imprimir
+            pop {r1, r2, lr}
+            bx lr
+        .fnend
+
+    /**
+    *   Imprime por consola el mensaje: "Por favor, ingrese solo numeros."
+    */
+    imprimirMsjSoloNumeros:
+        .fnstart
+            push {r1, r2, lr}
+            ldr r1, =msjSoloNumeros
+            ldr r2, =lenMsjSoloNumeros
+            bl imprimirLinea
+            pop {r1, r2, lr}
+        .fnend
+
+    /**
+    *   Devuelve true/false (1 o 0) si la cadena esta compuesta solo por numeros.
+    *   -------------------------------------------------------------------------
+    *   Entrada r0: puntero a la cadena.
+    *   -------------------------------------------------------------------------
+    *   Salida r1: 1 (true) o 0 (false)
+    */
+    sonDigitosOEspacios:
+        .fnstart
+            push {r0, r2, r3}
+
+            mov r1, #1  // r1 <- el resultado, por defecto 1 (true)
+
+            mov r2, #0  // r2 <- i (indice): contador para ciclar la cadena
+
+            cicloSonDigitosOEspacios:
+                ldrb r3, [r0, r2]       // cadena[i]
+
+                cmp r3, #0
+                beq finSonDigitosOEspacios       // Si cadena[i] == nul -> terminamos de iterar, eran todos digitos
+
+                cmp r3, #'\n'
+                beq sigCicloSonDigitosOEspacios     // Si cadenaa[i] == '\n' -> enter sirve, siguiente iteracion
+
+                cmp r3, #' '
+                beq sigCicloSonDigitosOEspacios     // Si cadenaa[i] == '\n' -> enter sirve, siguiente iteracion
+
+                cmp r3, #'0'
+                blt noSonTodosDigitos   // Si cadenaa[i] < '0' -> no es digito, retorna false
+
+                cmp r3, #'9'
+                bgt noSonTodosDigitos   // Si cadenaa[i] > '9' -> no es digito, retorna false
+
+            sigCicloSonDigitosOEspacios:
+                add r2, #1                      // i++
+                bal cicloSonDigitosOEspacios    // siguiente iteracion
+
+            noSonTodosDigitos:
+                mov r1, #0              // resultado = false
+                bal finSonDigitosOEspacios
+
+            finSonDigitosOEspacios:
+                pop {r0, r2, r3}
+                bx lr
+        .fnend
+
+    /**
+    *   Lee el ingreso por teclado de la coordenada X en asciz y lo
+    *   convierte a hexadecimal
+    *   -----------------------------------------------------------
+    *   Salida r0: la coordenada X transformada como hexadecimal.
+    */
+    pedirX:
+        .fnstart
+            push {r1, lr}
+            
+            cicloPedirX:
+                bl imprimirPedidoX  // "Ingrese la coordenada x para el disparo: "
+                bl leerDatos        // Lee input usuario
+
+                ldr r0, =inputUsuario
+                bl sonDigitosOEspacios       // r1 <- si en el input solo hay numeros
+                
+                cmp r1, #1
+                beq finPedirX       // si input son solo numeros -> salimos
+
+                // else -> informar al usuario que solo ingrese numeros y volver a ciclar
+                bl imprimirMsjSoloNumeros
+                bal cicloPedirX
+
+            finPedirX:
+                bl asciiADecim      // r1 <- el valor en decimal de lo ingresado en ascii
+                mov r0, r1          // Movemos el resultado a r0 para que lo retorne ahi
+                pop {r1, lr}
+                bx lr
+        .fnend
+
+    /**
+    *   Lee el ingreso por teclado de la coordenada Y en asciz y lo
+    *   convierte a hexadecimal
+    *   -----------------------------------------------------------
+    *   Salida r0: la coordenada Y transformada como hexadecimal.
+    */
+    pedirY:
+        .fnstart
+            push {r1, lr}
+            
+            cicloPedirY:
+                bl imprimirPedidoY  // "Ingrese la coordenada y para el disparo: "
+                bl leerDatos        // Lee input usuario
+
+                ldr r0, =inputUsuario
+                bl sonDigitosOEspacios       // r1 <- si en el input solo hay numeros
+                
+                cmp r1, #1
+                beq finPedirY       // si input son solo numeros -> salimos
+
+                // else -> informar al usuario que solo ingrese numeros y volver a ciclar
+                bl imprimirMsjSoloNumeros
+                bal cicloPedirY
+
+            finPedirY:
+                bl asciiADecim      // r1 <- el valor en decimal de lo ingresado en ascii
+                mov r0, r1          // Movemos el resultado a r0 para que lo retorne ahi
+                pop {r1, lr}
+                bx lr
+        .fnend
+
+    /**
+    *   Devuelve si el numero conincide con la coordenada X
+    *   de la posicion de la cuerda o no.
+    *   -----------------------------------------------------
+    *   Entrada r0: numero que ingreso el usuario
+    *   -----------------------------------------------------
+    *   Salida r1: 1 (true, si acerto) o 0 (false, no acerto)
+    */
+    aciertaDisparoX:
+        .fnstart
+            push {r0, r2, r3}
+
+            mov r1, #0  // r1 <- el resultado, por defecto 0 (false, no acerto)
+
+            ldr r2, =posCuerdaX
+            ldr r3, [r2]            // r3 <- posCuerdaX
+
+            cmp r0, r3
+            beq acertoX             // Si el numeroIngresado == posCuerdaX -> acerto
+
+            bal finAciertaDisparoX  // Else -> queda en 0 (false) y salimos
+            
+            acertoX:
+                mov r1, #1  // Para retornar 1 (true)
+
+            finAciertaDisparoX:
+                pop {r0, r2, r3}
+                bx lr
+        .fnend
+
+    /**
+    *   Devuelve si el numero conincide con la coordenada Y
+    *   de la posicion de la cuerda o no.
+    *   -----------------------------------------------------
+    *   Entrada r0: numero que ingreso el usuario
+    *   -----------------------------------------------------
+    *   Salida r1: 1 (true, si acerto) o 0 (false, no acerto)
+    */
+    aciertaDisparoY:
+        .fnstart
+            push {r0, r2, r3}
+
+            mov r1, #0              // r1 <- el resultado, por defecto 0 (false, no acerto)
+
+            ldr r2, =posCuerdaY
+            ldr r3, [r2]            // r3 <- posCuerdaY
+
+            cmp r0, r3
+            beq acertoY             // Si el numeroIngresado == posCuerdaY -> acerto
+
+            bal finAciertaDisparoY  // Else -> queda en 0 (false) y salimos
+            
+            acertoY:
+                mov r1, #1  // Para retornar 1 (true)
+
+            finAciertaDisparoY:
+                pop {r0, r2, r3}
+                bx lr
+        .fnend
+
+    /**
+    *   Reemplaza la cuerda '|' del mapa por un espacio ' '.
+    */
+    cortarCuerdaEnMapa:
+        .fnstart
+            push {r0, r1, r2, r3, r4, lr}
+            ldr r0, =mapa
+            mov r1, #' '
+            mov r2, #7
+            mov r3, #23
+            mov r4, #53
+            bl reemplazarLetraEnMatriz
+            pop {r0, r1, r2, r3, r4, lr}
+            bx lr
+        .fnend
+
+    /**
+    *   Ejecuta la funcionalidad que le da la opcion al usuario de
+    *   salvarse "disparando" a la cuerda del ahorcado.
+    */
+    disparo:
+        .fnstart
+            push {lr}
+
+            bl pedirX           // r0 <- el numero que ingreso el usuario
+            bl aciertaDisparoX   // r1 <- si acerto o no con la posicion x <- aciertaDisparoX(r0:numero)
+
+            cmp r1, #0
+            beq noAcertoDisparo
+
+            bl pedirY           // r0 <- el numero que ingreso el usuario
+            bl aciertaDisparoY   // r1 <- si acerto o no con la posicion y <- aciertaDisparoY(r0:numero)
+
+            cmp r1, #0
+            beq noAcertoDisparo
+
+            bl cortarCuerdaEnMapa
+            ldr r1, =msjJuegoGanado
+            ldr r2, = lenMsjJuegoGanado
+            bl imprimirLinea
+            bal finDisparo
+
+            noAcertoDisparo:
+                ldr r1, =msjJuegoPerdido
+                ldr r2, = lenMsjJuegoPerdido
+                bl imprimirLinea
+
+            finDisparo:
+                ldr r0, =run
+                mov r1, #0
+                str r1, [r0]
                 pop {lr}
                 bx lr
         .fnend
-/******** FIN PROCESAR DATOS ************************************************************************/
 
-
-/******** INI DISPARAR PARA GANAR *******************************************************************/
     /**
-    *   Procesa el modo de juego, donde el usuario puede salvarse si no le quedan vidas.
+    *   Inicia la parte del juego en que se le dan al usuario
+    *   las ultimas chances para evitar perder el juego.
     */
-    dispararParaGanar:
-        @todo - MATI
-        // Usuario tiene que ingresar coordenas x e y
-
-        // imprimir el texto "Ingresá una coordena x"
-        // Escanar el input y guardar el resultado en un r
-
-        // imprimir el texto "Ingresá una coordena y"
-        // Escanar el input y guardar el resultado en otro r
-        
-        // Utilizar x e y como indices fila y columna en la matriz "mapa"
-        // Si coincide con x=7 e y=14 le emboco
-        // imprime "Diste en el blanco! Ganaste el juego.
-        // bal fin
-        
-        // Si no coincide ganado = false
-        // imprime "Te equivocaste. Perdiste el juego."
-        // bal fin
-/******** INI DISPARAR PARA GANAR *******************************************************************/
-
-
-/******** INI PREGUNTA APROXIMATIVA *****************************************************************/
-    /**
-    *   Le hace al usuario una pregunta de aproximacion para restaurarle vida(s)
-    */
-    preguntaAproximativa:
-        @todo - BRIAN
-        // Imprime una pregunta aleatoria
-        // Si la respuesta es similar
-        // vidas += 1
-
-        // si la respuesta es incorrecta
-        // vidas = 0.
-/******** FIN PREGUNTA APROXIMATIVA *****************************************************************/
-
-
-/******** INI IMPRIMIR MAPA *************************************************************************/
-    /**
-    *   Imprime el mapa por consola
-    */
-    imprimirMapa:
+    jugarUltimasChances:
         .fnstart
-            push {r1, r2, lr}
-            ldr r1, =mapa       // Cargamos en r1 la direccion del mensaje
-            ldr r2, =longitud   // Tamaño de la cadena
-            bl imprimirString   // Imprime el mapa
-            pop {r1, r2, lr}
-            bx lr               // Vuelve
-        .fnstart
-/******** FIN IMPRIMIR MAPA *************************************************************************/
+        push {r0, lr}
 
+        bl preguntaAproximativa
 
-/******** INI JUGAR *********************************************************************************/
+        ldr r0, =vidas
+        ldrb r0, [r0]   // r0 <- vidasRestantes
+
+        // Si vidasRestantes > 0 -> que continue el juego, sin pasar por disparo
+        cmp r0, #0 
+        bgt finJugarUltimasChances
+
+        // else -> damos la ultima oportunidad
+        bl disparo
+
+        finJugarUltimasChances:
+            pop {r0, lr}
+            bx lr
+        .fnend
+
     /**
-    *   Imprime en pantalla el estado del juego, 
-    *   registra el input del usuario y altera 
-    *   los estados del juego segun esto.
+    *   Ejecuta la cadena de subrutinas que componen el juego.
     */
     jugar:
         .fnstart
-            push {r1, lr}           // Protegemos los registros
+            push {r0, lr}
+
+            bl imprimirMapa
+            bl informarEstado
 
             ldr r0, =vidas
-            ldrb r0, [r0]
-            cmp r0, #0
-            beq preguntaAproximativa
+            ldrb r0, [r0]   // r0 <- vidas restantes
 
+            // Si vidasRestantes <= 0 -> 
+            cmp r0, #0 
+            bgt inputOutput
+            
+            // else -> ofrecemos las ultimas chances (pregunta aprox y disparo)
+            bl jugarUltimasChances
+            bal finJugar
 
-            bl imprimirMapa     // Imprimimos el mapa por consola
-            bl leerDatos        // Registramos el input del usuario
-            bl procesarDatos    // 
+            inputOutput:
+                bl pedirLetra
+                bl procesarDatos
+                bl actualizarPalabraActualEnMapa
+                bl actualizarPersonaEnMapa
 
-            /* TOMAR EL INPUT DEL USUARIO */
-            bl leerDatos            // El SO guarda a partir de =inputUsuario (dir mem) el input
-            ldr r1, =inputUsuario   // r1 <-- colocamos esa direccion
-            bl largoCadena          // r0 <-- largo cadena de [=inputUsuario]
-            cmp r0, #1              // Comparamos r0 (largo) con #1
-            blt finJugar            // Si el input es "" (cadena vacia), vamos a la siguiente iteracion (para el usuario no paso nada)
-            bgt arriesgarPalabra     // Si es mayor que 1, intento arriesgar palabra
-            bal arriesgarLetra      // 
             finJugar:
-                pop {r1, lr}            // Quitamos protección
-                bx lr                   // Volvemos a donde sea que nos llamaron
+                pop {r0, lr}
+                bx lr
         .fnend
-/******** FIN JUGAR *********************************************************************************/
 
-
-/******** INI CICLO WHILE ***************************************************************************/
-    // Es el ciclo general del programa
-    // Acá dentro, se decide si salir, o continuar
-    cicloWhile:
+    /**
+    *   Convierte un numero en ascii a su equivalente en decimal.
+    *   ---------------------------------------------------------
+    *   Entrada r0: puntero a la cadena.
+    *   ---------------------------------------------------------
+    *   Salida r1: el numero en decimal.
+    */
+    asciiADecim:
         .fnstart
-            push {r1, lr}       // Protegemos registros porque los usuamos
-            ldrb r1, =salir     // r1 <-- la direccion de =salir
-            ldr r1, [r1]        // r1 <-- true: 1 o false: 0 (el contenido desde =salir)
-            cmp r1, #1          // Si r1 es 1 (true)
-            beq fin             // Hay que salir
-            bl jugar            // Hay que jugar
-            pop {r1, lr}        // Quitamos proteccion
-            bal cicloWhile
+            push {r0, r2, r3, r4}
+
+            ldrb r1, [r0]       // r1 <- inputUsuario[0]: primerCaracter
+            sub r1, r1, #0x30   // r1 <- el valor acumulado = inputUsuario[0] - 0x30
+            mov r2, #1          // r2 <- indice i: empieza en 1
+            mov r10, #10
+            
+            cicloAsciiADecim:
+                ldrb r3, [r0, r2]      // r3 <- inputUsuario[i]
+
+                cmp r3, #00
+                beq finAsciiADecim      // Si inputUsuario[i] == nul -> terminamos
+                cmp r3, #' '
+                beq finAsciiADecim      // Si inputUsuario[i] == ' ' -> terminamos
+                cmp r3, #'\n'
+                beq finAsciiADecim      // Si inputUsuario[i] == '\n' -> terminamos
+
+                sub r3, r3, #0x30      // r3 <- el equivalente al caracter en numero
+
+                mul r4, r1, r10        // r4 = r1 x 10
+
+                add r4, r3             // r4 += r3
+                mov r1, r4             // r1 <- el resultado que esta en r4
+
+                add r2, #1             // i++
+                bal cicloAsciiADecim   // Siguiente iteracion
+            
+            finAsciiADecim:
+                pop {r0, r2, r3, r4}
+                bx lr
         .fnend
-/******** FIN CICLO WHILE ***************************************************************************/
+    
+    /**
+    *   Carga la palabra del lemario, en la posicion que se corresponde
+    *   con el numero que ingreso el usuario, en =palabraOculta y coloca 
+    *   un '_' por cada caracter de palabraOculta en palabraActual.
+    *   ----------------------------------------------------------------
+    *   Entrada r1: el numero elegido por el usuario.
+    */
+    cargarPalabra:
+        .fnstart
+            push {r0, r1, r2, r3, r4, r5, r6}
+            ldr r0, =inputUsuario
+            ldr r2, =lemario
 
+            mov r3, #0  // r3 <- i: contador de caracteres para ciclar el lemario
+            // mov r4, #1  // r4 <- j: contador de palabras, inicia en 1
+            mov r4, #0  // r4 <- j: contador de palabras, inicia en 1
 
-/******** INI MAIN **********************************************************************************/
-    @ Donde empieza nuestro programa
-    .global main
-    main:
+            // Si la palabra elegida es la primera, directamente cargamos las letras
+            // cmp r1, #1
+            cmp r1, #0
+            beq cicloCargarLetras
+            // Sino, vamos al ciclo
+            // Buscamos la palabra dentro del lemario.
+            cicloBuscarPalabra:
+                cmp r4, r1
+                beq cicloCargarLetras    // Si j == numeroElegido -> cargamos las letras
+
+                ldrb r5, [r2, r3]    // r5 <- lemario[i]
+
+                cmp r5, #','
+                bne incrementarI    // Si lemario[i] != ',' -> solo incrementamos i
+
+            // Si lemario[i] == ',' -> incrementamos j
+            // porque termino una palabra, y el siguiente 
+            // caracter pertenece a otra palabra
+            incrementarJ:
+                add r4, #1  // j++
+
+            incrementarI:
+                add r3, #1  // i++
+                bal cicloBuscarPalabra
+
+            cicloCargarLetras:
+                ldr r0, =palabraOculta
+                ldr r1, =palabraActual
+                mov r4, #0                // r4 <- j: contador para ciclar las posiciones de palabraOculta y palabraActual
+                mov r5, #'_'
+
+                subCicloCargarLetras:
+                    add r3, #1                  // i++
+                    ldrb r6, [r2, r3]           // r6 <- lemario[i]
+
+                    cmp r6, #','
+                    beq finCargarPalabra        // si lemario[i] == ',' -> la palabra termino, podemos salir
+
+                    strb r6, [r0, r4]           // palabraOculta[j] = lemario[i]
+                    strb r5, [r1, r4]           // palabraActual[j] = '_'
+
+                    add r4, #1                  // j++
+                    bal subCicloCargarLetras    // Siguiente iteracion
+
+            finCargarPalabra:
+                pop {r0, r1, r2, r3, r4, r5, r6}
+                bx lr
+        .fnend
+    
+    /**
+    *   Solicita al usuario que ingrese un numero en el 
+    *   rango [1, 20], y reintenta si lo ingresado esta fuera del mismo.
+    */
+    elegirNumero:
+        .fnstart
+            push {r0, r1, r2, lr}  // Protegemos registros.
+
+            cicloSeleccionarPalabra:
+                // Le pedimos al usuario que ingrese un numero
+                ldr r1, =solicitudNumero    // Msj "Por favor ingrese un numero del 1 al 20: "
+                ldr r2, =lenSolicitudNumero
+                bl borrarEImprimir          // Imprime el mensaje en consola
+
+                bl leerDatos      // Registramos el input del usuario (actualiza =inputUsuario)
+
+                ldr r0, =inputUsuario
+                bl asciiADecim          // r1 <- num <- asciiADecim("num") <- "num" esta en =inputUsuario
+
+                cmp r1, #1 
+                blt cicloSeleccionarPalabra   // Si num < 1 -> volvemos a intentar
+
+                cmp r1, #20 
+                bgt cicloSeleccionarPalabra   // Si num > 20 -> volvemos a intentar
+                
+                ldr r0, =numeroPalabraElegida   // es .word
+                str r1, [r0]
+
+                // Si esta dentro del rango [1, 20] podemos salir
+                pop {r0, r1, r2, lr}
+                bx lr
+        .fnend
+    
+    /**
+    *   Devuelve un numero random entre 0 y el parametro r1 - 1 -> [0, r1)
+    *   ------------------------------------------------------------------
+    *   Entrada r1: numero tope.
+    *   ------------------------------------------------------------------
+    *   Salida r1: el numero random
+    */
+    elegirNumeroRandom:
+        .fnstart
+            push {r0, r3, lr}
+            bl currentTimeInMilis   // r0 <- semilla = epoch
+            bl numeroAleatorio      // r0 <- numero "aleatorio"
+            bl dividir              // r0: cociente, r1: resto <- dividir(r0: dividendo, r1: divisor)
+            pop {r0, r3, lr}
+            bx lr
+        .fnend
+
+.global main
+main:
+    
+    mov r1, #20             // r1 <- numeroTope (20 porque tenemos 20 palabras para elegir)
+    bl elegirNumeroRandom   // r1 <- numero "random" en rango [0, r1) <- elegirNumeroRandom(r1: numeroTope)
+    bl cargarPalabra        // Cargamos la palabra en =palabraOculta <- cargarPalabra(r1: numero)
+    bl actualizarPalabraActualEnMapa    // Actualizamos los "_ _ _ _ _" en el mapa.
+
+    cicloWhile:
         bl jugar
-/******** INI MAIN **********************************************************************************/
+    
+        ldr r0, =run
+        ldrb r1, [r0]    // r1 <- run (true/false)
+    
+        cmp r1, #1
+        beq cicloWhile  // Si run == True -> entrar al while otra vez
 
-
-/******** INI FIN ***********************************************************************************/
-    @ Para manejar el fin del programa
-    fin:
-        mov r7, #1  // Instrucción para salir del programa
-        swi 0       // Interrumpimos para terminas
-/******** FIN FIN ***********************************************************************************/
-
-
-
-// palabraOculta: "holanda"
-// letrasUsadas: "abcde"
-// palabraActual: "_______"
-// mapa
-
-//"holanda"
-//"___a__a"
-
-// String input = "a";
-// for (int i = 0; i < palabraOculta.length; i++) {
-//      if (palabraOculta[i] == input) {
-//          palabraActual[i] = input;
-//      } 
-// }
-
-
-//      ACTUALIZAR LETRAS DEVELADAS EN EL MAPA
-//     int indice = 0;
-//     for (int i = 0; i < palabraActual.length; i+=2) {
-//          mapa[indice] = palabraActual[i];
-//          indice += 2;
-//     } 
-//
-//
-//
-//
+fin:
+    mov r7, #1
+    swi 0
